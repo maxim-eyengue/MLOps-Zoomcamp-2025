@@ -98,13 +98,18 @@ chmod 400 name-of-your-private-key-file.pem
 
 ## 1.3 (Optional) Training a ride duration prediction model
 
-**Note**: The NYC taxi data is now in parquet format, not CSV.
-Here's a [video](https://www.youtube.com/watch?v=r94QjpX9vSE&list=PL3MmuxUbc_hIUISrluw_A7wDSmfOhErJK) that explains how to 
-read parquet data.
-
-<a href="https://www.youtube.com/watch?v=iRunifGSHFc&list=PL3MmuxUbc_hIUISrluw_A7wDSmfOhErJK">
-  <img src="images/thumbnail-1-03.jpg">
-</a>
+**Note**: The NYC taxi data is now in parquet format, not CSV. You can download it using the command:
+```sh
+# For January
+curl -O https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2021-01.parquet
+# For February
+curl -O "https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2021-02.parquet"
+```
+If needed install `pyarrow` or `fastparquet`:
+```sh
+pip install pyarrow
+```
+The advantage of parquet files is that they are smaller in size.
 
 Links:
 
