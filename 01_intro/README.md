@@ -34,35 +34,24 @@ jupyter
 ```
 You can check the `PORTS` section to visualize the port mapping between our local machine and our GitHub codespace.
 
-OR
 
 ### 1.2.2 VM in AWS
 
-**Note**: You don't have to rent an instance in the cloud. You can follow the same instructions 
-for setting up your local environment. 
+You can also rent an instance in the cloud but this option is more expensive. Finally it is possible to setup everything locally. Using the recommended development environment Linux, here are some steps to follow:
 
-<a href="https://www.youtube.com/watch?v=IXSiYkP23zo&list=PL3MmuxUbc_hIUISrluw_A7wDSmfOhErJK">
-  <img src="images/thumbnail-1-02.jpg">
-</a>
-
-
-Code:
-
-Recommended development environment: Linux
-
-### Step 1: Download and install the Anaconda distribution of Python
+#### Step 1: Download and install the Anaconda distribution of Python
 ```sh
 wget https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-x86_64.sh
 bash Anaconda3-2022.05-Linux-x86_64.sh
 ```
 
-### Step 2: Update existing packages
+#### Step 2: Update existing packages
 
 ```sh
 sudo apt update
 ```
 
-### Step 3: Install Docker and Docker Compose
+#### Step 3: Install Docker and Docker Compose
 Follow the instructions here:
 [install-using-the-repository](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository)  
 Set up Docker's apt repository.
@@ -92,7 +81,7 @@ sudo groupadd docker
 sudo usermod -aG docker $USER
 ```
 
-### Step 4: Run Docker
+#### Step 4: Run Docker
 
 ```sh
 docker run hello-world
