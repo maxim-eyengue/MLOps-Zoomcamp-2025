@@ -24,7 +24,7 @@ To get the most out of this course, you should have prior experience with:
 
 ## Modules
 
-### [Module 1: Introduction](01-intro)
+### [Module 1: Introduction](01_intro)
 - What is MLOps?
 - MLOps maturity model
 - NY Taxi dataset (our running example)
@@ -32,7 +32,7 @@ To get the most out of this course, you should have prior experience with:
 - Course structure & environment setup
 - Homework
 
-### [Module 2: Experiment Tracking & Model Management](02-experiment-tracking)
+### [Module 2: Experiment Tracking & Model Management](02_experiment-tracking)
 - Introduction to experiment tracking
 - MLflow basics
 - Model saving and loading
@@ -40,32 +40,32 @@ To get the most out of this course, you should have prior experience with:
 - Hands-on MLflow exercises
 - Homework
 
-### [Module 3: Orchestration & ML Pipelines](03-orchestration)
+### [Module 3: Orchestration & ML Pipelines](03_orchestration)
 
 - Workflow orchestration
 - Homework
 
-### [Module 4: Model Deployment](04-deployment)
+### [Module 4: Model Deployment](04_deployment)
 - Deployment strategies: online (web, streaming) vs. offline (batch)
 - Deploying with Flask (web service)
 - Streaming deployment with AWS Kinesis & Lambda
 - Batch scoring for offline processing
 - Homework
 
-### [Module 5: Model Monitoring](05-monitoring)
+### [Module 5: Model Monitoring](05_monitoring)
 - Monitoring ML-based services
 - Web service monitoring with Prometheus, Evidently, and Grafana
 - Batch job monitoring with Prefect, MongoDB, and Evidently
 - Homework
 
-### [Module 6: Best Practices](06-best-practices)
+### [Module 6: Best Practices](06_best-practices)
 - Unit and integration testing
 - Linting, formatting, and pre-commit hooks
 - CI/CD with GitHub Actions
 - Infrastructure as Code (Terraform)
 - Homework
 
-### [Final Project](07-project/)
+### [Final Project](07_project/)
 - End-to-end project integrating all course concepts
 
 
