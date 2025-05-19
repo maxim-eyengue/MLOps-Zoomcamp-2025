@@ -1,115 +1,136 @@
-# 1. Introduction
+<p align="center">
+  <img width="80%" src="../images/banner-2025.jpg" alt="MLOps Zoomcamp">
+</p>
 
-Instructor: Alexey Grigorev
+# 🚀 MLOps Zoomcamp – Week 1: Introduction
 
-## 1.1 Introduction
-MLOPS also know as Machine Learning Operations is a set of bets practices for putting Machine Learning models into production. The course will tackle best practices and tools for that. As example think of how to predict the duraation of a drive when taking a taxi. In the simplest way we can thnk of threes teps for a ML project:
-design: do we need ML for solving this problem or is there something simpler, train: build the best model to reach our goal, operate: apply the model to new data. The model can be deployed via a web-service (API) so a user ask for a service and get a response. Once, the model is deployed, the operate stage helps make sure that the model is performing well and not becoming worse woth time or new data.
+**Instructor:** Alexey Grigorev
+
+---
+
+## 📌 1.1 Introduction
+
+**MLOps** (Machine Learning Operations) is a set of best practices for putting Machine Learning models into production. This course tackles tools and techniques to make ML projects production-ready.
+
+📦 **Example use case**: Predicting the duration of a taxi ride.
+
+A basic ML project includes 3 main steps:
+- **Design**: Do we really need ML for this problem, or is there a simpler approach?
+- **Train**: Build and evaluate a model to achieve our goal.
+- **Operate**: Apply the model to new data and ensure it keeps performing well over time.
+
+🖥️ The trained model is often deployed as a **web service (API)**. Once deployed, it must be **monitored** to detect performance degradation due to data drift or other changes.
 
 
 
-## 1.2 Environment preparation
+## 🛠️ 1.2 Environment Preparation
 
-### 1.2.1 GitHub Codespaces
-This is for setting our environment. First you have to login a github account. Then, you create a new repository for the machine learning zoomcamp. Make sure to add a README file for the description and to put the repository as public. 
-After creating the repo, click on code and then on codespaces to create a codespace on main. The advantage of this codespace is that some tools like Python, docker, docker-compose, node.js are already installed. 
-However, working from the browser is not always convenient: running jupyter notebooks or mlflow, we need to be able to forward ports or connect to services through our computer. For that we will open visual studio code desktop from the interface (note that codespaces extension is required). In the terminal we will then download and install anaconda: 
+### 🖥️ 1.2.1 GitHub Codespaces
+
+To set up the development environment:
+
+1. Login to GitHub.
+2. Create a new **public** repository (with a README).
+3. Navigate to `Code` → `Codespaces` → create codespace on `main`.
+
+🎯 **Advantages**: Codespaces come with Python, Docker, Docker Compose, and Node.js pre-installed.
+
+👨‍💻 However, browser environments are limited. To work efficiently:
+- Open **Visual Studio Code Desktop** with the Codespaces extension.
+- Install **Anaconda**:
+
 ```sh
-# Download anaconda
+# Download Anaconda
 wget https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-x86_64.sh
+
 # Install Anaconda
 bash Anaconda3-2022.05-Linux-x86_64.sh
 ```
-After completing the installation, and grantig required access, we can then open jupyter from our terminal
+
+After installation, run:
+
 ```sh
-# Check python version
+# Check Python version
 python -V
-# Open jupyter notebook
+
+# Launch Jupyter
 jupyter
 ```
-You can check the `PORTS` section to visualize the port mapping between our local machine and our GitHub codespace.
+
+💡 Check the PORTS section in VSCode to visualize local and remote port mapping.
 
 
-### 1.2.2 VM in AWS or Locally with Linux
+### ☁️ 1.2.2 VM in AWS or Locally with Linux
 
-You can also rent an instance in the cloud but this option is more expensive. Finally it is possible to setup everything locally. Using the recommended development environment Linux, here are some steps to follow:
+Another option is to use a Linux VM locally:
 
-#### Step 1: Download and install the Anaconda distribution of Python
+✅ Step 1: Install Anaconda
 ```sh
 wget https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-x86_64.sh
 bash Anaconda3-2022.05-Linux-x86_64.sh
 ```
 
-#### Step 2: Update existing packages
-
+✅ Step 2: Update packages
 ```sh
 sudo apt update
 ```
 
-#### Step 3: Install Docker and Docker Compose
-Follow the instructions here:
-[install-using-the-repository](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository)  
-Set up Docker's apt repository.
+✅ Step 3: Install Docker and Docker Compose
+🧱 Official Docker guide
 ```sh
-# Add Docker's official GPG key:
 sudo apt-get update
 sudo apt-get install ca-certificates curl
 sudo install -m 0755 -d /etc/apt/keyrings
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-# Add the repository to Apt sources:
 echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
 sudo apt-get update
-```
-Install the Docker packages.
-```sh
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
-To run docker without `sudo`:
 
+🔓 Run Docker without sudo:
 ```sh
 sudo groupadd docker
 sudo usermod -aG docker $USER
 ```
 
-#### Step 4: Run Docker
-
+✅ Step 4: Test Docker installation
 ```sh
 docker run hello-world
 ```
 
-If you get `docker: Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Post "http://%2Fvar%2Frun%2Fdocker.sock/v1.24/containers/create": dial unix /var/run/docker.sock: connect: permission denied.` error, restart your VM instance, or run:
-`sudo dockerd`
-
-**Note**: If you get `It is required that your private key files are NOT accessible by others. This private key will be ignored.` error, you should change permits on the downloaded file to protect your private key:
-
- ```sh
+⚠️ If you get a permission denied error with Docker:
+```sh
+sudo dockerd
+```
+🔑 If you encounter an error with SSH private key permissions:
+```sh
 chmod 400 name-of-your-private-key-file.pem
 ```
 
+### 🧰 1.2.3 Using Installers (Simpler Option)
 
-### 1.2.3 Using installers
+Install tools using official web installers:
+	•	Anaconda
+	•	Docker Desktop
 
-A simpler option consists of installing [Anaconda](https://www.anaconda.com/download) and [Docker Desktop](https://docs.docker.com/desktop/) using their web installers. To follow the program using **Python 3.9.7**, we can install a conda environment with the following command:
+Then, create and activate a conda environment:
 ```sh
 conda create -n mlops-zoomcamp python=3.9.7
-```
-
-We activate it with:
-```sh
 conda activate mlops-zoomcamp
 ```
 
-To install necessary packages and tools:
+Install common packages:
 ```sh
 conda install numpy pandas scikit-learn seaborn jupyter
 ```
 
-## 1.3 Training a ride duration prediction model
+## 📉 1.3 Training a Ride Duration Prediction Model
 
 **Note**: The NYC taxi data is now in parquet format, not CSV. You can download it using the command:
 ```sh
@@ -118,7 +139,7 @@ curl -O https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2021-01.p
 # For February
 curl -O "https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2021-02.parquet"
 ```
-If needed, install `pyarrow` or `fastparquet`:
+📦 Install `pyarrow` or `fastparquet` if needed:
 ```sh
 pip install pyarrow
 ```
@@ -127,37 +148,63 @@ The advantage of parquet files is that they are smaller in size.
 We trained our model using a [jupyter notebook](notebooks/duration-prediction.ipynb).
 
 
-## 1.4 Course overview
-From the training [notebook](notebooks/duration-prediction.ipynb), a couple of things can be improved. Notebooks are often intended for experiments. We need to make sure they are cleaned and more modular: maybe turned even into a python script.
-Doing experiments in notebooks without being organized enough can make us lose the track of those experiments. We can use the *markdown* to keep notes of what happened: metrics and parameters for example. We can even save them into excel files. A better approach is logging all the metrics to an experiment-tracker. We will then be able to log it in other to check models performance. Models also can be saved to model registry so to keep all models with their metrics so to make sure we get the best model. For experiment tracking, we will use ml-flow on the following module. For continuing experiments with notebooks, we need to make sure to modify code, execute some cells and not some others. To turn the notebook in some steps that can be easily executable we can use ML pipelines. Steps can include:
-- load & prepare data
-- vectorize the dataframe
-- train the model
+## 🧭 1.4 Course Overview
 
-  The pipeline can be parametrized in function of the data and the model we want to train. The output of the pipeline is a model that we want to deploy as a service for users. Once, the model is deployed, we need to make sure it is still performing well by monitoring it: if there is a performance drop re-execute the pipeline with new data for example, and deploy it again.
-  Note that best practces include automating everything. For excluding completely humans from the process the model needs to be in a very mature model (highest level = 4).
+Jupyter notebooks are great for experiments, but can become messy.
 
+Tips:
+	•	Use Markdown to track metrics and parameters.
+	•	Consider logging experiments using an experiment tracker like MLflow.
+	•	Save models to a model registry to keep versions and metadata organized.
+
+⚙️ Use ML pipelines to structure your workflow:
+	1.	Load & prepare data
+	2.	Vectorize the data
+	3.	Train the model
+
+🎯 Pipelines can be parametrized in function of the data and the model we want to train. They output models ready to be deployed as a service.
+
+🛠️ Once deployed, monitor performance. If it drops, retrain the model with new data and redeploy.
+
+📌 Best practice: automate as much as possible.
 
 
 ## 1.5 MLOps maturity model
 
 ![ML Ops maturity model levels](../images/maturity_levels.jpg)
 
-[Microsoft documentation](https://docs.microsoft.com/en-us/azure/architecture/example-scenario/mlops/mlops-maturity-model) defines five levels of maturity model:
-- Level 0: No ML Ops automation at all.
-Here we use jupyter notebooks for machine learning without proper pipelining, experiment tracking or metadata. When data scientists work alone, this usually happens. It's okay for some experimentations (POC LEVEL) but to pass the POC level we need more automation.
-- Level 1: DevOps, No MLOps.
-There is some level of automation. Releases are automated and models can be deployed in the same way as web services in usual software engineering. There is unit test, integration test, CI/CD, operation metrics but systems are not specific to Machine leraning at all. It is not easy to reproduce models. Here we left the POC level for going to production.
+### 🔢 Maturity Levels:
+
+| Level | Description                                                             |
+|-------|-------------------------------------------------------------------------|
+| **0** | ❌ No automation. Experiments in Jupyter, no reproducibility.            |
+| **1** | ⚙️ DevOps practices applied, but no ML-specific tooling.                 |
+| **2** | 🧪 Automated training, experiment tracking, model registry.              |
+| **3** | 🚀 Automated deployment, API access, A/B testing, monitoring.            |
+| **4** | 🤖 Fully automated ML system – training, deployment, monitoring.         |
+
+📘 Source: [Microsoft MLOps Documentation](https://docs.microsoft.com/en-us/azure/architecture/example-scenario/mlops/mlops-maturity-model) 
+
+For more details:
+- Level 0: No ML Ops automation at all.    
+Here we use jupyter notebooks for machine learning without proper pipelining, experiment tracking or metadata. When data scientists work alone, this usually happens. It's okay for some experimentations (POC LEVEL) but to pass this stage, we need more automation.
+
+- Level 1: DevOps, No MLOps.     
+There is some level of automation. Releases are automated and models can be deployed in the same way as web services in usual software engineering. There is unit test, integration test, CI/CD, operation metrics but systems are not specific to Machine leraning at all. It is not easy to reproduce models. Here we are leaving the POC level for going to production.
+
 - Level 2: Automated Training.
 There is ML training pipeline, experiment tracking and model registry (knowing which model is in production or not). The deployment is relatively simple, not necessarily automated - low friction deployment. We should considere it when we have 2 or 3+ cases or models.
+
 - Level 3: Automated Deployment.
-After the model is trained, how to easily deploy it. We often have an ML platform (a place to deploy models). The user can then make API call to access the model. Here we also have A/B test that can be ran from ML platforms to be able to test different versions of models and decide which is better. Model are often monitored as part of the deployment.
+After the model is trained, how to easily deploy it? We often have an ML platform (to deploy models). The user can then make API calls to access the model. We can run A/B tests from ML platforms to test different versions of models and decide which is better. Models are often monitored as part of the deployment.
+
 - Level 4: Full MLOps Automated Operations.
 Models are automatically trained, retrained, deployed and monitored in one place.
 
-NB: Even in mature organizations, not all services need to be at level 4. Do not rush. Choose what you need in function of your goal. 
+**NB:** 🧠 “Don’t aim to automate everything at once. Start small, iterate, and grow with purpose!”
 
 
-## 1.6 Homework
+## 📝 1.6 Homework
+Homework for this module is available [here.](notebooks/homework_01.ipynb).
 
 ---
