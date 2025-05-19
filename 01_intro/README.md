@@ -128,18 +128,20 @@ We trained our model using a [jupyter notebook](notebooks/duration-prediction.ip
 
 
 ## 1.4 Course overview
-
-<a href="https://www.youtube.com/watch?v=teP9KWkP6SM&list=PL3MmuxUbc_hIUISrluw_A7wDSmfOhErJK">
-  <img src="images/thumbnail-1-04.jpg">
-</a>
+From the training [notebook](notebooks/duration-prediction.ipynb), a couple of things can be improved. Notebooks are often intended for experiments. We need to make sure they are cleaned and more modular: maybe turned even into a python script.
+Doing experiments in notebooks without being organized enough can make us lose the track of those experiments. We can use the *markdown* to keep notes of what happened: metrics and parameters for example. We can even save them into excel files. A better approach is logging all the metrics to an experiment-tracker. We will then be able to log it in other to check models performance. Models also can be saved to model registry so to keep all models with their metrics so to make sure we get the best model. For experiment tracking, we will use ml-flow on the following module. For continuing experiments with notebooks, we need to make sure to modify code, execute some cells and not some others. To turn the notebook in some steps that can be easily executable we can use ML pipelines. Steps can include:
+- load & prepare data
+- vectorize the dataframe
+- train the model
+  The pipeline can be parametrized in function of the data and the model we want to train. The output of the pipeline is a model that we want to deploy as a service for users. Once, the model is deployed, we need to make sure it is still performing well by monitoring it: if there is a performance drop re-execute the pipeline with new data for example, and deploy it again.
+  Note that best practces include automating everything. For excluding completely humans from the process the model needs to be in a very lature system (highest level = 4).
 
 
 
 ## 1.5 MLOps maturity model
 
-<a href="https://www.youtube.com/watch?v=XwTH8BDGzYk&list=PL3MmuxUbc_hIUISrluw_A7wDSmfOhErJK">
-  <img src="images/thumbnail-1-05.jpg">
-</a>
+
+
 
 Links: 
 
