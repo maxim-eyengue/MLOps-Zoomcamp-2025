@@ -1,6 +1,4 @@
-<p align="center">
-  <img width="80%" src="../images/banner-2025.jpg" alt="MLOps Zoomcamp">
-</p>
+![MLOps Zoomcamp](../images/banner-2025.jpg)
 
 # 🚀 MLOps Zoomcamp – Week 1: Introduction
 
