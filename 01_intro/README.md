@@ -109,7 +109,7 @@ To install necessary packages and tools:
 conda install numpy pandas scikit-learn seaborn jupyter
 ```
 
-## 1.3 (Optional) Training a ride duration prediction model
+## 1.3 Training a ride duration prediction model
 
 **Note**: The NYC taxi data is now in parquet format, not CSV. You can download it using the command:
 ```sh
@@ -124,9 +124,9 @@ pip install pyarrow
 ```
 The advantage of parquet files is that they are smaller in size.
 
-Links:
+We trained our model in the following notebook:
 
-* [Notebook](duration-prediction.ipynb)
+* [Notebook](notebooks/duration-prediction.ipynb)
 
 
 ## 1.4 Course overview
