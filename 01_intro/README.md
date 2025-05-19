@@ -94,7 +94,7 @@ chmod 400 name-of-your-private-key-file.pem
 
 ### 1.2.3 Using installers
 
-A simpler option consists of installing Anaconda and Docker Desktop using their web installers. To follow the program using **Python 3.9.7**, we can install a conda environment with the following command:
+A simpler option consists of installing [Anaconda](https://www.anaconda.com/download) and [Docker Desktop](https://docs.docker.com/desktop/) using their web installers. To follow the program using **Python 3.9.7**, we can install a conda environment with the following command:
 ```sh
 conda create -n mlops-zoomcamp python=3.9.7
 ```
@@ -124,9 +124,7 @@ pip install pyarrow
 ```
 The advantage of parquet files is that they are smaller in size.
 
-We trained our model in the following notebook:
-
-* [Notebook](notebooks/duration-prediction.ipynb)
+We trained our model using a [jupyter notebook](notebooks/duration-prediction.ipynb).
 
 
 ## 1.4 Course overview
