@@ -8,11 +8,6 @@ design: do we need ML for solving this problem or is there something simpler, tr
 
 
 
-
-
-
-
-
 ## 1.2 Environment preparation
 
 ### 1.2.1 GitHub Codespaces
@@ -35,7 +30,7 @@ jupyter
 You can check the `PORTS` section to visualize the port mapping between our local machine and our GitHub codespace.
 
 
-### 1.2.2 VM in AWS
+### 1.2.2 VM in AWS or Locally with Linux
 
 You can also rent an instance in the cloud but this option is more expensive. Finally it is possible to setup everything locally. Using the recommended development environment Linux, here are some steps to follow:
 
@@ -96,6 +91,24 @@ If you get `docker: Got permission denied while trying to connect to the Docker 
 chmod 400 name-of-your-private-key-file.pem
 ```
 
+
+### 1.2.3 Using installers
+
+A simpler option consists of installing Anaconda and Docker Desktop using their web installers. To follow the program using **Python 3.9.7**, we can install a conda environment with the following command:
+```sh
+conda create -n mlops-zoomcamp python=3.9.7
+```
+
+We activate it with:
+```sh
+conda activate mlops-zoomcamp
+```
+
+To install necessary packages and tools:
+```sh
+conda install numpy pandas scikit-learn seaborn jupyter
+```
+
 ## 1.3 (Optional) Training a ride duration prediction model
 
 **Note**: The NYC taxi data is now in parquet format, not CSV. You can download it using the command:
@@ -105,7 +118,7 @@ curl -O https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2021-01.p
 # For February
 curl -O "https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2021-02.parquet"
 ```
-If needed install `pyarrow` or `fastparquet`:
+If needed, install `pyarrow` or `fastparquet`:
 ```sh
 pip install pyarrow
 ```
