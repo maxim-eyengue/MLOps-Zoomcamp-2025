@@ -133,20 +133,29 @@ Doing experiments in notebooks without being organized enough can make us lose t
 - load & prepare data
 - vectorize the dataframe
 - train the model
+
   The pipeline can be parametrized in function of the data and the model we want to train. The output of the pipeline is a model that we want to deploy as a service for users. Once, the model is deployed, we need to make sure it is still performing well by monitoring it: if there is a performance drop re-execute the pipeline with new data for example, and deploy it again.
-  Note that best practces include automating everything. For excluding completely humans from the process the model needs to be in a very lature system (highest level = 4).
+  Note that best practces include automating everything. For excluding completely humans from the process the model needs to be in a very mature model (highest level = 4).
 
 
 
 ## 1.5 MLOps maturity model
 
+![ML Ops maturity model levels](../images/maturity_levels.jpg)
 
+[Microsoft documentation](https://docs.microsoft.com/en-us/azure/architecture/example-scenario/mlops/mlops-maturity-model) defines five levels of maturity model:
+- Level 0: No ML Ops automation at all.
+Here we use jupyter notebooks for machine learning without proper pipelining, experiment tracking or metadata. When data scientists work alone, this usually happens. It's okay for some experimentations (POC LEVEL) but to pass the POC level we need more automation.
+- Level 1: DevOps, No MLOps.
+There is some level of automation. Releases are automated and models can be deployed in the same way as web services in usual software engineering. There is unit test, integration test, CI/CD, operation metrics but systems are not specific to Machine leraning at all. It is not easy to reproduce models. Here we left the POC level for going to production.
+- Level 2: Automated Training.
+There is ML training pipeline, experiment tracking and model registry (knowing which model is in production or not). The deployment is relatively simple, not necessarily automated - low friction deployment. We should considere it when we have 2 or 3+ cases or models.
+- Level 3: Automated Deployment.
+After the model is trained, how to easily deploy it. We often have an ML platform (a place to deploy models). The user can then make API call to access the model. Here we also have A/B test that can be ran from ML platforms to be able to test different versions of models and decide which is better. Model are often monitored as part of the deployment.
+- Level 4: Full MLOps Automated Operations.
+Models are automatically trained, retrained, deployed and monitored in one place.
 
-
-Links: 
-
-* [MLOps Maturity model](https://docs.microsoft.com/en-us/azure/architecture/example-scenario/mlops/mlops-maturity-model)
-
+NB: Even in mature organizations, not all services need to be at level 4. Do not rush. Choose what you need in function of your goal. 
 
 
 ## 1.6 Homework
