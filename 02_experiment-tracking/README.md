@@ -8,7 +8,7 @@
 
 ## 📌 2.1 Experiment tracking introduction
 
-**Experiment tracking** is the process of keeping track of all relevant information from an ML experiment, which includes: source code, environment, data, model, hyperarameters, metrics, etc. depending on the experiment we're running: tuning hyperparameters or updating the data used, for example.  An **ML experiment** is the whole process of building a ML model. It is made of many trials. Each of them is an **experiment run**. Note that a **run artifact** is any file that is associated with an ML run and **experiment metadata** are information about an ML experiment like the source code used, the name of the user, etc.
+**Experiment tracking** is the process of keeping track of all relevant information from an ML experiment, which includes: source code, environment, data, model, hyperarameters, metrics, etc. depending on the experiment we're running: tuning hyperparameters or updating the data used, for example.  An **ML experiment** is the whole process of building an ML model. It is made of many trials. Each of them is an **experiment run**. Note that a **run artifact** is any file that is associated with an ML run and **experiment metadata** are information about an ML experiment like the source code used, the name of the user, etc.
 
 Experiment tracking are important for **reproducibility** so others can reproduce our work, **organization** to simplify and ease whatever we are working on and **optimization** to make sure we pick the optimal model in function of our needs that might even change.
 
@@ -49,11 +49,16 @@ We can now copy the listening address in a navigator to start `mlflow`, and run 
 
 ## 📉 2.3 Experiment tracking with MLflow
 From basic logins added into the [notebook](./notebooks/course/duration-prediction.ipynb), we will now add hyperparameters tuning and explore their results using the mlflow UI
-to determine the best model. Note that selecting the best model depends on our needs but we can also simply use the model tags for filtering and sort the runs by the metric. We will also use [**Autolog**](https://mlflow.org/docs/latest/tracking/autolog), an interesting feature of mlflow enabling login a lot of information with less code. Note that when saving the model mlflow also keeps track of the environment.
+to determine the best model. Note that selecting the best model depends on our needs but we can also simply use the model tags for filtering and sort the runs by the metric. We will also use [**Autolog**](https://mlflow.org/docs/latest/tracking/autolog), an interesting feature of mlflow enabling login a lot of information with less code. Note that when saving the model, mlflow also keeps track of the environment.
 
 
-### 🖥️ 
+### 🖥️ 2.4 Model Management
+Machine Learning lifecycle refers to all the steps needed to build and maintain a machine learning model.
+![ML Lifecycle](../images/ML_lifecycle.png)
+Model management covers experiment tracking, model versioning and model deployment. The model might nees to be updated in order to scale. Once done, and after deployment, it can then be used for making predictions.
+Saving models in folders is error prone as you can overwritte accidently an old model. There is no clear versioning of the models and no model lineage (what data and hyperparameters were used for training and evaluation). `mlflow` proposes better options for saving models. We can save it as an artifact. This will just save the model file to mlflow. We can also save it directly as a model. This will help saving more information: many flavors depending on the model i.e: python function and xgboost, the environment information either conda indicating the python environment or only requirements with the packages used. Note that it is important to save the preprocessor as for making predictions in the future we will need to preprocess the data. It can be saved as an artifact.
 
+Note that mlflow automatically generates code snippets to indicate how to make predictions using the model saved with the function `log_model`. **Uri**(unique resource identifier) serves to identify a model.
 
 ### ☁️ 
 
