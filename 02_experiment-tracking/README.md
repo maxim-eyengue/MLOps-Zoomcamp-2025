@@ -131,6 +131,20 @@ To configure mlflow, we need to think of:
 
 ## 🧭 2.7 MLflow: benefits, limitations and alternatives
 
+The tracking server can be easily deployed to the cloud helping to share experiments with other data scientists, collaborate with others to build and deploy models using the model registry and give more visibility of the data science efforts.
+
+Some issues with running a remote (shared) MLflow server are
+- Security: you need to restrict access to the server (e.g. access through VPN).
+- Scalability: Check [Deploy MLflow on AWS Fargate](https://github.com/aws-samples/amazon-sagemaker-mlflow-fargate) or Check [MLflow at Company Scale](https://www.youtube.com/c/Databricks) by Jean-Denis Lesage for tracking experiments.
+- Isolation: you can define standard for naming experiments, models and a set of default tags and also to restrict access to artifacts (e.g. use s3 buckets living in different AWS accounts).
+
+MLflow limitations (and when not to use it):
+
+- Authentication & Users: The open source version of MLflow doesn’t provide any sort of authentication.
+- Data versioning: to ensure full reproducibility we need to version the data used to train the model. MLflow doesn’t provide a built-in solution for that but there are a few ways to deal with this limitation.
+- Model/Data Monitoring & Alerting: this is outside of the scope of MLflow and currently there are more suitable tools for doing this.
+
+Some paid MLflow alternatives include: [Neptune](https://neptune.ai/), [Comet](https://www.comet.com/site/), [Weights & Biases](https://wandb.ai/site) and [many more](https://neptune.ai/blog/best-ml-experiment-tracking-tools).
 
 
 
