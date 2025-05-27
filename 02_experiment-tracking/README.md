@@ -2,7 +2,7 @@
 
 # 🚀 MLOps Zoomcamp – Week 2: Introduction
 
-**Instructor:** Cristian Martinez, Alexey Grigorev
+**Instructor:** Cristian Martinez
 
 ---
 
