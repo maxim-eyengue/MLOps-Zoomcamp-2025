@@ -90,11 +90,11 @@ mlflow server --backend-store-uri sqlite:///backend.db
 ```
 to interact with other team members might be useful but doesn't need to be on the cloud. Note this is a server, not the UI. A sqlite database would enable using the model registry and artifacts can be stored locally or even on the cloud. Running the tracking server locally, helps to see results from a run in real time before it finishes. Note that here, the metadata are not saved in the artifact root but in the sqlite database.
 
-In the last case with multiple data scientists, sharing information is very important. It allows data scientists to continue experiments and manage together the lyfecicle of the model. Here, AWS is used to host a remote server. Follow the steps described in the file [`mlflow_on_aws.md`](./notebooks/course/mlflow-on-aws.md) to create a new AWS account, connect to the AWS console manageent and launch the tracking server.  Note that the bucket used will be called: `mlflow-runs-artifacts-remote` and the first database will be: `mlflow_db` to keep tracks of experiments. The username will be `mlflow` and the password: `cZuf7QPowRdx2t0Hpnxx`. The database endpoint is `mlflow-database.c0fckkq4q0tk.us-east-1.rds.amazonaws.com`.
+In the last case with multiple data scientists, sharing information is very important. It allows data scientists to continue experiments and manage together the lyfecicle of the model. Here, AWS is used to host a remote server. Follow the steps described in the file [`mlflow_on_aws.md`](./notebooks/course/mlflow-on-aws.md) to create a new AWS account, connect to the AWS console manageent and launch the tracking server.  Note that the bucket used will be called: `mlflow-runs-artifacts-remote` and the first database will be: `mlflow_db` to keep tracks of experiments. The username will be `mlflow` and the password: `****`. The database endpoint is `mlflow-database.c0fckkq4q0tk.us-east-1.rds.amazonaws.com`.
 
 We will run the server with the command:
 
-`mlflow server -h 0.0.0.0 -p 5000 --backend-store-uri postgresql://mlflow:cZuf7QPowRdx2t0Hpnxx@mlflow-database.c0fckkq4q0tk.us-east-1.rds.amazonaws.com:5432/mlflow_db --default-artifact-root s3://mlflow-runs-artifacts-remote`
+`mlflow server -h 0.0.0.0 -p 5000 --backend-store-uri postgresql://mlflow:****@mlflow-database.c0fckkq4q0tk.us-east-1.rds.amazonaws.com:5432/mlflow_db --default-artifact-root s3://mlflow-runs-artifacts-remote`
 
 If any error with `urlib` packages:
 
