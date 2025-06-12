@@ -86,10 +86,8 @@ with mlflow.start_run():
 
     # Model parameters
     params = {
-        "solver": "lbfgs",
-        "max_iter": 100,
-        "multi_class": "auto",
-        "random_state": 8888
+        "C": 0.1,
+        "random_state": 42
     }
     # Log the model parameters
     mlflow.log_params(params)
@@ -134,6 +132,12 @@ client.set_registered_model_alias(
     version = model_version
 )
 
+# Model URI for logging:
+# With model version: f"models:/{model_name}/{model_version}"`
+# With aliasing: f"models:/{model_name}@{alias}"
+logged_model_uri = f"models:/{model_name}@{alias}"
+
+
 # Model transitioning consists of copying models and re-aliasing
 # New model name for production
 prod_model_name = "iris-clas-prod"
@@ -146,9 +150,7 @@ client.set_registered_model_alias(
     version = model_version
 )
 
-# Model URI for logging:
-# With model version: f"models:/{model_name}/{model_version}"`
-# With aliasing: f"models:/{model_name}@{alias}"
+# Update model URI
 logged_model_uri = f"models:/{prod_model_name}@champion"
 
 # Load the model as a python function using its URI
