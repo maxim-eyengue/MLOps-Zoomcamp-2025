@@ -123,7 +123,7 @@ mlflow.register_model(
 # Model version
 model_version = 1 # The version increases each time we registered the same model and should be adjusted acccordingly
 # Model alias
-alias = "challenger" # models go from `challenger` (new) to `champion` (in production)
+alias = "challenger" # models can, for example, go from `challenger` (new) to `champion` (in production)
 
 # Assign alias to the model
 client.set_registered_model_alias(
@@ -172,4 +172,4 @@ print(accuracy_score(y, y_pred))
 
 After running your script, refresh the MLflow UI in your browser (`http://127.0.0.1:5000`). You will see your new run listed. Click on it to see the detailed view, which includes the parameters you logged, the accuracy metric, and the saved model artifact. This interface allows you to compare different runs, which is incredibly useful when you are tuning your models. 
 
-> ⚠️ NB: Model staging now works with aliases and tags.You can assign aliases like **challenger** to newly trained models and **champion** to production-ready ones. This aliasing can also be managed directly from the UI. Some code is available to upload and use registered models.
+> ⚠️ NB: Model staging now works with aliases and tags. For example, you can assign aliases like **challenger** to newly trained models and **champion** to production-ready ones. Aliasing can also be managed directly from the UI. Some code is available to upload and use registered models.
