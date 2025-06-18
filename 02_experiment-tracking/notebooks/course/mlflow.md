@@ -49,7 +49,7 @@ mlflow server --backend-store-uri sqlite:///backend.db --default-artifact-root .
 ```
 You can also define a backend store for saving run information (metrics, parameters, tags), and an artifacts store for models and environments requirements, and specify a host address (e.g., `--host 127.0.0.1`) and even a port (e.g., `--port 8080`).
 
-> NB: `mlflow server` allows remote backends and cloud artifact storage, so your team can collaborate from different machines.
+> NB: `mlflow server` allows remote backends and cloud artifact storage, so your team can collaborate from different machines. Also note that it is available through **Databricks** for example, with the Experiments User Interface.
 
 
 ## Logging Experiments
@@ -77,7 +77,7 @@ mlflow.search_experiments()
 
 # Set a Machine Learning experiment
 mlflow.set_experiment("my-first-experiment") # If not mlflow will use the default one
-# If the experiement set doesn't exist it will be created automatically
+# If the experiment set doesn't exist it will be created automatically
 
 # Start an experiment run 
 with mlflow.start_run():
@@ -111,6 +111,7 @@ mlflow.search_experiments()
 client = MlflowClient(tracking_uri = "http://127.0.0.1:5000")
 
 # Get the id of the first experiment run
+# It is possible to filer to specific runs by some criteria (e.g., run start time, status, tags, metrics values, etc.)
 run_id = client.search_runs(experiment_ids = '1')[0].info.run_id
 # Model name
 model_name = 'iris-classifier'
@@ -121,9 +122,9 @@ mlflow.register_model(
 )
 
 # Model version
-model_version = 1 # The version increases each time we registered the same model and should be adjusted acccordingly
+model_version = 1 # The version increases each time we registered the same model and should be adjusted accordingly
 # Model alias
-alias = "challenger" # models can, for example, go from `challenger` (new) to `champion` (in production)
+alias = "challenger" # models can for example go from `challenger` (new) to `champion` (in production)
 
 # Assign alias to the model
 client.set_registered_model_alias(
@@ -164,7 +165,7 @@ print(accuracy_score(y, y_pred))
 ### How It Works
 
 * **`mlflow.start_run()`**: Creates a new MLflow run. All the tracking for this experiment will be recorded under this run.
-* **`mlflow.log_params()`**: Takes a dictionary of parameters and logs them for the current run. This is useful for keeping track of the hyperparameters you used.
+* **`mlflow.log_params()`**: Takes a dictionary of parameters and logs them for the current run. This is useful for keeping track of the hyper-parameters you used.
 * **`mlflow.log_metric()`**: Logs a single key-value metric. You can call this multiple times to log different metrics.
 * **`mlflow.sklearn.log_model()`**: Logs your trained scikit-learn model as an artifact. MLflow has integrations for many other popular machine learning libraries as well.
 
@@ -172,4 +173,7 @@ print(accuracy_score(y, y_pred))
 
 After running your script, refresh the MLflow UI in your browser (`http://127.0.0.1:5000`). You will see your new run listed. Click on it to see the detailed view, which includes the parameters you logged, the accuracy metric, and the saved model artifact. This interface allows you to compare different runs, which is incredibly useful when you are tuning your models. 
 
-> ⚠️ NB: Model staging now works with aliases and tags. For example, you can assign aliases like **challenger** to newly trained models and **champion** to production-ready ones. Aliasing can also be managed directly from the UI. Some code is available to upload and use registered models.
+> ⚠️ NB: Model staging now works with aliases and tags. For example, you can assign aliases like **challenger** to newly trained models and **champion** to production-ready ones.  Aliasing can also be managed directly from the UI. Some code is even available to upload and use registered models.
+
+## For More...
+- [MLFlow Official Documentation](https://www.mlflow.org/docs/latest/index.html)
