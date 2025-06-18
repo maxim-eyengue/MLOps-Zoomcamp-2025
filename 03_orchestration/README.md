@@ -159,9 +159,7 @@ To initialize a Prefect Project, run `prefect project init` in the project direc
 Note that these files are not overwritten if they already exist: manual deletion is required to reinitialize properly.
 
 #### Prefect.yaml Configuration
-
-- The `prefect.yaml` file includes metadata such as project name, Prefect version (e.g., 2.10.8), and repository details.
-- Build and push steps (e.g., Docker image creation or pushing to AWS S3) can be configured but are optional; in this context, only the pull step is active, which clones the repository code during deployment runs   .
+The `prefect.yaml` file includes metadata such as project name, Prefect version (e.g., 2.10.8), and repository details. Build and push steps (e.g., Docker image creation or pushing to AWS S3) can be configured but are optional; in this context, only the pull step is active, which clones the repository code during deployment runs.
 
 #### Work Pools and Workers
 
@@ -170,7 +168,7 @@ Note that these files are not overwritten if they already exist: manual deletion
   - Kubernetes
   - Serverless options like Cloud Run, Azure Container Instances, or Amazon ECS
 - In this tutorial, a process work pool named "Zoom pool" is created for local execution.
-- Workers pull tasks from the work pool and execute flows, enabling distributed or parallel processing    .
+- Workers pull tasks from the work pool and execute flows, enabling distributed or parallel processing.
 
 #### Deploying the Flow
 
