@@ -148,6 +148,160 @@ prefect config set PREFECT_API_URL=http://127.0.0.1:4200/api
 python orchestrate-prefect.py --year=2021 --month=1
 ```
 
+### 3.3.4 Deploying Your Workflow
+The workflow evolves from a notebook to a script enhanced with Prefect tasks and flow decorators, improving resilience and observability. The next step is deploying this workflow on a local Prefect server to enable scheduling and collaboration features.
+
+To initialize a Prefect Project, run `prefect project init` in the project directory. This will create essential files:
+  - `.prefectignore`: prevents automatic code pushes from Prefect to Git repositories.
+  - `deployment.yaml`: useful for templating multiple deployments.
+  - `prefect.yaml`: the main configuration file for the project and deployment build, pull, and push steps.
+  - `.prefect` folder: contains shorthand convenience files.
+Note that these files are not overwritten if they already exist: manual deletion is required to reinitialize properly.
+
+#### Prefect.yaml Configuration
+
+- The `prefect.yaml` file includes metadata such as project name, Prefect version (e.g., 2.10.8), and repository details.
+- Build and push steps (e.g., Docker image creation or pushing to AWS S3) can be configured but are optional; in this context, only the pull step is active, which clones the repository code during deployment runs   .
+
+#### Work Pools and Workers
+
+- A **work pool** is created to manage where and how flow runs execute. Types include:
+  - Process (local subprocesses)
+  - Kubernetes
+  - Serverless options like Cloud Run, Azure Container Instances, or Amazon ECS
+- In this tutorial, a process work pool named "Zoom pool" is created for local execution.
+- Workers pull tasks from the work pool and execute flows, enabling distributed or parallel processing    .
+
+#### Deploying the Flow
+
+- Deployment is performed using the CLI command:
+
+  ```bash
+  prefect deploy 3.4/orchestrate.py:main_flow --name Taxi1 --work-pool zoompool
+  ```
+
+  - `3.4/orchestrate.py:main_flow` specifies the flow entry point.
+  - `--name` assigns a deployment name.
+  - `--work-pool` specifies the pool from which workers will pull tasks.
+- Successful deployments are confirmed with messages like "main flow Taxi1 successfully created"   .
+
+#### Starting Workers and Running Flows
+
+- Workers are started with:
+
+  ```bash
+  prefect worker start -p zoompool
+  ```
+
+  - Optional `-T process` can specify worker type.
+  - Workers continuously poll the specified work pool for available flow runs.
+- Flow runs can be triggered either through the Prefect UI or CLI.
+- Upon triggering, the deployment creates a flow run, which the worker picks up and executes according to the configured infrastructure and flow logic    .
+
+#### Observing Flow Execution and Results
+
+- The Prefect UI provides real-time monitoring of flow runs, including scheduling status, logs, and results such as validation RMSE.
+- The terminal output confirms worker activity and successful completion of flow runs.
+- The project repository includes necessary data files (e.g., parquet files) to ensure data availability during execution.
+- Future improvements include leveraging cloud storage like S3 for data to facilitate collaboration and scalability    .
+
+#### Benefits of Deployment
+
+- Deployments enable:
+  - Scheduling of workflows.
+  - Collaboration among team members via shared infrastructure.
+  - More robust and scalable production workflows beyond local script execution   .
+
+---
+
+> **💡 Key Insight:** Deploying workflows with Prefect projects and work pools abstracts execution infrastructure, supports scheduling, and enhances collaboration, marking a critical step towards production-grade MLOps.  
+   
+### 3.3.5 Working with Deployments
+#### Prefect Blocks for AWS S3 Integration
+- Prefect blocks enable modular, reusable components for workflows; AWS-related blocks such as S3 bucket and AWS credentials blocks facilitate integration with AWS services.   
+- Installation of `prefect-aws` package is required to use AWS blocks; documentation and examples are available on Prefect's official GitHub and docs site for reference.   
+- AWS credentials block requires AWS Access Key ID and Secret Access Key; sensitive information should be protected (e.g., environment variables) and not publicly exposed.   
+- AWS IAM setup involves creating a user with appropriate S3 access permissions (e.g., full S3 access or restricted policies) to enable read/write operations on S3 buckets.   
+- Blocks are Python classes with validation (using Pydantic), registered and saved to the Prefect server to be accessible during workflow runs; overwriting existing blocks is supported.   
+- Loading and using saved blocks from the Prefect server allows decoupling credentials and bucket configuration from code, enhancing security and reusability.   
+- Prefect CLI commands like `prefect block ls` and `prefect block register` help manage block types and ensure server awareness of available blocks.   
+- Blocks can be created or edited via Prefect UI or Python code, providing flexibility in managing infrastructure components.   
+
+#### Loading Data from S3 in Prefect Flows
+- Modify Prefect flow to load data directly from S3 by loading the S3 bucket block and using methods like `download_folder_to_path` to retrieve entire folders to local paths.   
+- This approach avoids storing data in GitHub repositories and enables dynamic data retrieval during flow execution, supporting better data management and security practices.   
+- Running the flow locally with S3 integration verifies data download and processing, with all execution details captured in the Prefect UI for monitoring.   
+
+#### Creating and Managing Multiple Deployments
+- Prefect projects support multiple deployments from a single codebase; deployments are defined in a `deployment.yaml` file specifying entry points, flow names, work pools, schedules, and parameters.   
+- Example: one deployment uses local data, another uses S3 data, differentiated by entry point scripts and flow names; both can be deployed simultaneously with `prefect deploy --all`.   
+- Multiple deployments enhance flexibility by allowing different data sources or configurations without duplicating codebases.   
+
+#### Adding Artifacts for Enhanced Reporting
+- Prefect supports creating artifacts such as markdown reports that appear in the UI, useful for sharing metrics like RMSE after model training.   
+- Markdown artifacts can include formatted tables with dynamic content (e.g., dates, metrics) using Python f-strings and `create_markdown_artifact` from Prefect.   
+- Artifacts provide historical records of model performance, aiding comparison between runs and improving transparency of workflow outcomes.   
+
+#### Running Deployments and Monitoring
+- Deployments can be run from the command line using `prefect deployment run` with deployment identifiers; workers must be running to execute flows.   
+- Flow runs execute in isolated temporary directories, with progress and logs visible in the Prefect UI, including status updates like downloading data and validation results.   
+- Artifacts generated during runs are accessible in the UI, providing instant feedback on model metrics or other outputs.  
+
+#### Parameterization and Scheduling of Flows
+- Flow runs support parameter overrides via the UI, allowing users to customize inputs such as dates or filenames per run without changing code.  
+- Deployments can have schedules added through the UI or CLI to automate flow execution at intervals (e.g., every 10 minutes or 60 seconds), supporting recurring workflows.   
+- Schedules can be defined with interval, cron, or repeating rules; some complex schedules may require CLI or YAML configuration as UI support is limited.   
+- CLI commands like `prefect deployment set schedule` enable setting or updating schedules programmatically.  
+
+> **💡 Key Insight (from source):** Prefect blocks combined with deployments, artifacts, and scheduling provide a powerful, modular framework for productionizing workflows with dynamic data sources like S3, enabling automation, monitoring, and reproducibility. 
+
+### 3.3.6 Prefect Cloud
+#### Prefect Cloud Overview and Architecture
+- **Prefect Cloud** is a hosted orchestration platform run by the Prefect company, allowing users to avoid managing their own servers while gaining enhanced pipeline orchestration and monitoring features   .
+- It uses a **hybrid model**: user code and workers run on local or user-chosen infrastructure, while Prefect Cloud manages metadata (flow states, scheduling info) without storing full flow code or data   .
+- Workers connect to Prefect Cloud’s API to receive scheduled flow runs from work pools and send back metadata updates, which are displayed in the Prefect Cloud UI  .
+
+#### Profiles and Server Connection
+- Prefect profiles manage connection configurations to different Prefect servers (local or cloud); users can list and switch profiles to change the server their client communicates with  .
+- Logging into Prefect Cloud is done via the CLI using `prefect cloud login`, which supports OAuth-based web login or API key authentication; API keys can be generated and managed from the Prefect Cloud UI    .
+- Profile information, including API keys and server URLs, is stored locally in the `.prefect/profiles.toml` file, enabling multiple profile setups for different environments   .
+
+#### Setting Up Workers and Work Pools
+- Workers are started locally with commands like `prefect worker start -p  -t ` to connect them to a specific work pool on Prefect Cloud; work pools can be typed by infrastructure (e.g., process, Kubernetes, Docker) and support concurrency limits    .
+- Creating a worker without an existing work pool will automatically create a work pool of the specified type, facilitating management of distributed execution resources   .
+
+#### Deployment and Flow Management
+- Deployments are created using `prefect deploy --all`, which reads deployment configuration files (`prefect.yaml`, `deployment.yaml`) and registers flows on Prefect Cloud   .
+- The Prefect Cloud UI allows users to view deployments, check their state (pending, running, completed), and monitor flow runs with detailed visibility into task runs, subflows, artifacts, and results   .
+
+#### Collaboration and Workspaces
+- Prefect Cloud supports **workspaces**, enabling team collaboration by inviting others to shared environments, a feature not available in local Prefect server setups   .
+- Security practices include SOC 2 Type 2 compliance and role-based authentication options (e.g., SSO integration via Okta) for enterprise use cases  .
+
+#### Cloud-Only Features: Event Feed and Automations
+- Prefect Cloud provides an **event feed** showing detailed, filterable logs of flow and task events, which is not available in the open-source server version   .
+- **Automations** enable users to trigger actions based on flow run state changes (e.g., scheduled, completed, failed). Triggers can initiate notifications or other deployments, enhancing operational workflows   .
+- Notification blocks support various channels such as email, Slack, and PagerDuty; users can create and customize these blocks to send alerts when flows enter specified states    .
+
+#### Key Commands and File Structures
+| Command/Concept                  | Purpose/Description                                                                                         |
+|--------------------------------|------------------------------------------------------------------------------------------------------------|
+| `prefect profile ls`            | Lists all available Prefect profiles and their associated servers                                          |
+| `prefect cloud login`           | Authenticates CLI with Prefect Cloud via web login or API key                                              |
+| `prefect worker start -p  -t ` | Starts a local worker connected to a specified work pool and infrastructure type                      |
+| `prefect deploy --all`          | Deploys all flows defined in configuration files to Prefect Cloud                                          |
+| `.prefect/profiles.toml`        | Local storage of Prefect profiles, including API keys and server URLs                                      |
+| `prefect.yaml` & `deployment.yaml` | Configuration files defining flow deployments and settings                                               |
+
+#### Important Notes
+> **❗ Important:** Prefect Cloud does not receive or store the actual flow code or data—only metadata about flow states and execution, preserving user data locality and security.  
+   
+
+> **ℹ️ Note:** Switching between local and cloud servers requires changing profiles and ensuring workers and deployments are connected to the correct server.  
+   
+
+> **💡 Key Insight:** Automations and event feeds in Prefect Cloud enable proactive monitoring and response to pipeline events, improving workflow reliability and team collaboration.  
+  
 
 ## 📝 3.4 Homework
 Homework for this module is available [here.](notebooks/homework/homework_03.ipynb).
