@@ -205,4 +205,15 @@ Models are automatically trained, retrained, deployed and monitored in one place
 ## 📝 1.6 Homework
 Homework for this module is available [here.](notebooks/homework_01.ipynb).
 
+> ### Bonus: SSH authentication for GitHub
+> You can generate an SSH key on your laptop to push notebooks to GitHub using SSH. Follow this [tutorial](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent).
+> To **Test** the **SSH Connection**, open a terminal an run the following command:
+>```bash
+>ssh -T git@github.com
+>```
+> If everything is set up correctly, you'll see a message confirming authentication:
+>``` 
+>Hi <username>! You've successfully authenticated, but GitHub does not provide shell access.
+>```
+
 ---
