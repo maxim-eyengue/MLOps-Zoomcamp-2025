@@ -151,8 +151,7 @@ python orchestrate-prefect.py --year=2021 --month=1
 ### 3.3.4 Deploying Your Workflow
 The workflow evolves from a notebook to a script enhanced with Prefect tasks and flow decorators, improving resilience and observability. The next step is deploying this workflow on a local Prefect server to enable scheduling and collaboration features.
 
-We will make a deployment using a **prefect project**. It is very useful especially when using **GitHub**. The command `git remote -v` helps to check the remote repository we are working on. To initialize a Prefect Project, run `prefect project init` in the project directory with previous versions of prefect and `prefect init` with recent ones. 
-This will create essential files:
+We will make a deployment using a **prefect project**. It is very useful especially when using **GitHub**. The command `git remote -v` helps to check the remote repository we are working on. To initialize a Prefect Project, run `prefect project init` in the project directory with previous versions of prefect and `prefect init` with recent ones. Make sure to choose `local filesystem` for our testing case. This will create essential files:
   - `.prefectignore`: prevents automatic code pushes from Prefect to Git repositories.
   - `prefect.yaml`: the main configuration file for the project and deployment build, pull, and push steps.
   - `deployment.yaml`: useful for templating multiple deployments. [Created only on old prefect versions]
@@ -161,7 +160,7 @@ Note that these files are not overwritten if they already exist: manual deletion
 
 The [`prefect.yaml` file](./notebooks/course/prefect.yaml) includes metadata such as project (or parent folder) name, Prefect version (e.g., 3.4.6), and repository details. Build and push steps (e.g., Docker image creation or pushing to AWS S3) can be configured but are optional. In this context, only the pull step is active, which clones the repository code during deployment runs.
 
-After creating a prefect project, and making sure our entrypoint function has a flow decorator, we login to prefect cloud `prefect cloud login` or start an open source server `prefect server start`. We can then start a worker that polls our work pool. Using the UI makes int simpler and helps with necessary code to run:
+After creating a prefect project, and making sure our entrypoint function has a flow decorator and that mlflow is running, we login to prefect cloud `prefect cloud login` or start an open source server `prefect server start` and configurate it. We can then start a worker that polls our work pool. Using the UI makes int simpler and helps with necessary code to run:
 ```sh
 prefect worker start --pool "zoompool"
 ```
@@ -173,7 +172,7 @@ A **work pool** is created to manage where and how flow runs execute. Process wo
 
 Deployment is performed using the CLI command:
 ```bash
-prefect deploy orchestrate-prefect.py:run --name Taxi1 --pool zoompool --params='{"year":2021, "month":1}'
+prefect deploy orchestrate-prefect.py:run --name Taxi --pool zoompool --params='{"year":2021, "month":1}'
 ```
 Note that:
   - `orchestrate-prefect.py:run` specifies the flow entry point.
@@ -181,9 +180,9 @@ Note that:
   - `--pool` specifies the pool from which workers will pull tasks.
   - `--params='{"year":2021, "month":1}'` provides the required parameters to run the script.
 
-Successful deployments are confirmed with messages like `Deployment 'run/Taxi1' successfully created with id '9daaa875-cd19-450c-80a7-08032777e125'.` We can now run a the deployment from the CLI:
+Successful deployments are confirmed with messages like `Deployment 'run/Taxi' successfully created with id '9daaa875-cd19-450c-80a7-08032777e125'.` We can now run a the deployment from the CLI:
 ```sh
-prefect deployment run 'run/Taxi1'
+prefect deployment run 'run/Taxi'
 ```
 Deployments can also be run through the Prefect UI. Upon triggering, the deployment creates a flow run, which the worker picks up and executes according to the configured infrastructure and flow logic. The Prefect UI provides real-time monitoring of flow runs, including scheduling status, logs, and results such as validation RMSE. 
 
