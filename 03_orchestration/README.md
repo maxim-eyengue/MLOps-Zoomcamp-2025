@@ -151,11 +151,11 @@ python orchestrate-prefect.py --year=2021 --month=1
 ### 3.3.4 Deploying Your Workflow
 The workflow evolves from a notebook to a script enhanced with Prefect tasks and flow decorators, improving resilience and observability. The next step is deploying this workflow on a local Prefect server to enable scheduling and collaboration features.
 
-We will make a deployment using a **prefect project**. It is very useful especially when using **GitHub**. The command `git remote -v` helps to check the remote repository we are working on. To initialize a Prefect Project, run `prefect project init` in the project directory with previous versions of prefect and `prefect init` with recent ones. Make sure to choose `local filesystem` for our testing case. This will create essential files:
+We will make a deployment using a **prefect project**. It is very useful especially when using **GitHub**. The command `git remote -v` helps to check the remote repository we are working on. To initialize a Prefect Project, run `prefect project init` in the project directory (for previous versions of prefect) or `prefect init` (for recent ones). Make sure to choose `local filesystem` for our testing case. This will create essential files:
   - `.prefectignore`: prevents automatic code pushes from Prefect to Git repositories.
   - `prefect.yaml`: the main configuration file for the project and deployment build, pull, and push steps.
   - `deployment.yaml`: useful for templating multiple deployments. [Created only on old prefect versions]
-  - `.prefect` folder: contains shorthand convenience files. [Created only on old prefecrt versions]
+  - `.prefect` folder: contains shorthand convenience files. [Created only on old prefect versions]
 Note that these files are not overwritten if they already exist: manual deletion is required to reinitialize properly.
 
 The [`prefect.yaml` file](./notebooks/course/prefect.yaml) includes metadata such as project (or parent folder) name, Prefect version (e.g., 3.4.6), and repository details. Build and push steps (e.g., Docker image creation or pushing to AWS S3) can be configured but are optional. In this context, only the pull step is active, which clones the repository code during deployment runs.
