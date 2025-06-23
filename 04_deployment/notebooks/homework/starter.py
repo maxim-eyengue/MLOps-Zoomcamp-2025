@@ -1,6 +1,6 @@
 
 # Necessary import
-import pickle
+import sys, pickle
 import pandas as pd
 
 # Open the model file
@@ -9,7 +9,7 @@ with open('model.bin', 'rb') as f_in:
     dv, model = pickle.load(f_in)
 
 # Set the date
-year, month = 2023, 3
+year, month = int(sys.argv[1]), int(sys.argv[2]) # 2023, 4 for test Q5
 # Set of categrical features
 categorical = ['PULocationID', 'DOLocationID']
 
@@ -33,7 +33,6 @@ def read_data(filename):
     return df
 
 
-
 # Read the Yellow taxi data
 df = read_data(f'https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_{year}-{month:02d}.parquet')
 
@@ -45,7 +44,8 @@ X_val = dv.transform(dicts)
 y_pred = model.predict(X_val)
 # Predictions standard deviation
 print(f"Predictions Standard Deviation: {round(y_pred.std(), 2)}")
-
+# Predictions Mean
+print(f"Predictions Mean: {round(y_pred.mean(), 2)}")
 
 # Let's create an artificial `ride_id` column
 df['ride_id'] = f'{year:04d}/{month:02d}_' + df.index.astype('str')
@@ -63,6 +63,5 @@ df_result.to_parquet(
     compression = None,
     index = False
 )
-
 
 # ---
