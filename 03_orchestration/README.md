@@ -189,41 +189,31 @@ Deployments can also be run through the Prefect UI. Upon triggering, the deploym
 > **💡 Key Insight:** Deploying workflows with Prefect projects and work pools abstracts execution infrastructure, supports scheduling, and enhances collaboration, marking a critical step towards production-grade MLOps.  
    
 ### 3.3.5 Working with Deployments
-#### Prefect Blocks for AWS S3 Integration
-- Prefect blocks enable modular, reusable components for workflows; AWS-related blocks such as S3 bucket and AWS credentials blocks facilitate integration with AWS services.   
-- Installation of `prefect-aws` package is required to use AWS blocks; documentation and examples are available on Prefect's official GitHub and docs site for reference.   
-- AWS credentials block requires AWS Access Key ID and Secret Access Key; sensitive information should be protected (e.g., environment variables) and not publicly exposed.   
-- AWS IAM setup involves creating a user with appropriate S3 access permissions (e.g., full S3 access or restricted policies) to enable read/write operations on S3 buckets.   
-- Blocks are Python classes with validation (using Pydantic), registered and saved to the Prefect server to be accessible during workflow runs; overwriting existing blocks is supported.   
-- Loading and using saved blocks from the Prefect server allows decoupling credentials and bucket configuration from code, enhancing security and reusability.   
-- Prefect CLI commands like `prefect block ls` and `prefect block register` help manage block types and ensure server awareness of available blocks.   
-- Blocks can be created or edited via Prefect UI or Python code, providing flexibility in managing infrastructure components.   
+Prefect blocks enable modular, reusable components for workflows. AWS-related blocks such as S3 bucket and AWS credentials blocks facilitate integration with AWS services. We can create blocks either from the Prefect UI or from [a python file](./notebooks/course/create_aws_s3_bucket_block.py). 
 
-#### Loading Data from S3 in Prefect Flows
-- Modify Prefect flow to load data directly from S3 by loading the S3 bucket block and using methods like `download_folder_to_path` to retrieve entire folders to local paths.   
-- This approach avoids storing data in GitHub repositories and enables dynamic data retrieval during flow execution, supporting better data management and security practices.   
-- Running the flow locally with S3 integration verifies data download and processing, with all execution details captured in the Prefect UI for monitoring.   
+First, we need to install the `prefect-aws` package to use AWS blocks: `pip install prefect-aws`. To see the documentation, check [here](https://prefecthq.github.io/prefect-aws/). We will then execute a [script](./notebooks/course/create_aws_s3_bucket_block.py) for creating an S3 bucket: `python create_aws_s3_bucket_block.py`. AWS credentials block requires AWS Access Key ID and Secret Access Key. These are sensitive information that should be protected (e.g., environment variables) and not publicly exposed. AWS IAM setup involves creating a user with appropriate S3 access permissions (e.g., full S3 access or restricted policies) to enable read/write operations on S3 buckets.
+
+Blocks are Python classes with validation (using Pydantic), registered and saved to the Prefect server to be accessible during workflow runs; overwriting existing blocks is supported. Loading and using saved blocks from the Prefect server allows decoupling credentials and bucket configuration from code, enhancing security and reusability. Prefect CLI commands can help manage block types and ensure server awareness of available blocks:
+- `prefect block ls`: to see our blocks
+- `prefect block type ls`: to see the type of blocks that are available
+- `prefect block register`: to make the blocks available for configuration via the UI. If a block type has already been registered, its registration will be updated to match the block's current definition.  
+
+Blocks can be created or edited via Prefect UI or Python code, providing flexibility in managing infrastructure components.
+
+> NB: AWS S3 buckets can be used with Prefect for free.
+
+We can modify [Prefect flow](./notebooks/course/orchestrate-prefect_s3.py) to load data directly from S3 by loading the S3 bucket block and using methods like `download_folder_to_path` to retrieve entire folders to local paths. This approach avoids storing data in GitHub repositories and enables dynamic data retrieval during flow execution, supporting better data management and security practices. Running the flow locally with S3 integration verifies data download and processing, with all execution details captured in the Prefect UI for monitoring.   
 
 #### Creating and Managing Multiple Deployments
-- Prefect projects support multiple deployments from a single codebase; deployments are defined in a `deployment.yaml` file specifying entry points, flow names, work pools, schedules, and parameters.   
-- Example: one deployment uses local data, another uses S3 data, differentiated by entry point scripts and flow names; both can be deployed simultaneously with `prefect deploy --all`.   
-- Multiple deployments enhance flexibility by allowing different data sources or configurations without duplicating codebases.   
+Prefect projects support multiple deployments from a single codebase; deployments are defined in a [`deployment.yaml` file](./notebooks/course/deployment.yaml) specifying entry points, flow names, work pools, schedules, and parameters. For example, one deployment can use local data, and another S3 data, and they can be differentiated by entry point scripts and flow names; both can be deployed simultaneously with `prefect deploy --all` (generally used to deploy all the flows in a project). Multiple deployments enhance flexibility by allowing different data sources or configurations without duplicating codebases.   
 
 #### Adding Artifacts for Enhanced Reporting
-- Prefect supports creating artifacts such as markdown reports that appear in the UI, useful for sharing metrics like RMSE after model training.   
-- Markdown artifacts can include formatted tables with dynamic content (e.g., dates, metrics) using Python f-strings and `create_markdown_artifact` from Prefect.   
-- Artifacts provide historical records of model performance, aiding comparison between runs and improving transparency of workflow outcomes.   
+Prefect supports creating artifacts such as markdown reports that appear in the UI, useful for sharing metrics like RMSE after model training. Markdown artifacts can include formatted tables with dynamic content (e.g., dates, metrics) using Python f-strings and `create_markdown_artifact` from Prefect. Artifacts provide historical records of model performance, aiding comparison between runs and improving transparency of workflow outcomes.   
 
-#### Running Deployments and Monitoring
-- Deployments can be run from the command line using `prefect deployment run` with deployment identifiers; workers must be running to execute flows.   
-- Flow runs execute in isolated temporary directories, with progress and logs visible in the Prefect UI, including status updates like downloading data and validation results.   
-- Artifacts generated during runs are accessible in the UI, providing instant feedback on model metrics or other outputs.  
+Deployments can be run from the command line using `prefect deployment run` with deployment identifiers; workers must be running to execute flows. Flow runs execute in isolated temporary directories, with progress and logs visible in the Prefect UI, including status updates like downloading data and validation results.    Artifacts generated during runs are accessible in the UI, providing instant feedback on model metrics or other outputs.  
 
 #### Parameterization and Scheduling of Flows
-- Flow runs support parameter overrides via the UI, allowing users to customize inputs such as dates or filenames per run without changing code.  
-- Deployments can have schedules added through the UI or CLI to automate flow execution at intervals (e.g., every 10 minutes or 60 seconds), supporting recurring workflows.   
-- Schedules can be defined with interval, cron, or repeating rules; some complex schedules may require CLI or YAML configuration as UI support is limited.   
-- CLI commands like `prefect deployment set schedule` enable setting or updating schedules programmatically.  
+Flow runs support parameter overrides via the UI, allowing users to customize inputs such as dates or filenames per run without changing code. Deployments can have schedules added through the UI or CLI to automate flow execution at intervals (e.g., every 10 minutes or 60 seconds), supporting recurring workflows. Schedules can be defined with interval, cron, or repeating rules; some complex schedules may require CLI or YAML configuration as UI support is limited. CLI commands like `prefect deployment schedule` enable setting or updating schedules programmatically.  
 
 > **💡 Key Insight (from source):** Prefect blocks combined with deployments, artifacts, and scheduling provide a powerful, modular framework for productionizing workflows with dynamic data sources like S3, enabling automation, monitoring, and reproducibility. 
 
