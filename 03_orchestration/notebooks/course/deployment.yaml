@@ -1,0 +1,16 @@
+deployments:
+  - name: taxi_local_data
+    entrypoint: orchestrate-prefect.py:run
+    parameters:
+      year: 2021
+      month: 1
+    work_pool:
+      name: zoompool
+
+  - name: taxi_s3_data
+    entrypoint: orchestrate-prefect_s3.py:run_s3
+    parameters:
+      year: 2022
+      month: 3
+    work_pool:
+      name: zoompool
