@@ -41,7 +41,7 @@ def add_features(
         np.ndarray,
         sklearn.feature_extraction.DictVectorizer,
     ]
-):
+): # type: ignore
     """Add features to the model"""
     df_train["PU_DO"] = df_train["PULocationID"] + "_" + df_train["DOLocationID"]
     df_val["PU_DO"] = df_val["PULocationID"] + "_" + df_val["DOLocationID"]
