@@ -22,7 +22,7 @@ def predict(features):
 # Initialize the Flask app
 app = Flask('duration-prediction')
 
-# Predict endpoint: wrapper function for handling requests
+# Predict endpoint: Function wrapper for handling requests
 @app.route('/predict', methods = ['POST']) # decorator for turning the function into an endpoint
 def predict_endpoint():
     # Get the json data from the request
