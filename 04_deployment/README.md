@@ -72,17 +72,13 @@ For testing: `python test.py`.
 #### Dockerizing the Application
 We can create A [Dockerfile](./notebooks/course/4.2_web-service/Dockerfile) to containerize the Flask application. It will:
   - Use a Python 3.9 slim base image to ensure consistency with the development environment.
+    > Available Python docker images can be found [here](https://hub.docker.com/_/python).
   - Update pip to the latest version to avoid issues with package installations (e.g., for packages like xgboost).
   - Copy `Pipfile` and `Pipfile.lock` into the container and installs dependencies directly into the system Python environment (**no virtual environment inside Docker**). The ``--system`` and `--deploy` flags in the pipenv install command in the Dockerfile are used to install dependencies system-wide (skipping environment creation).
   - Copy the model pickle file and the Flask app script into the container's working directory.
   - Set the container to expose port 9696 (open the port in the container) and run the app using Gunicorn, by specifying the Flask app module and app variable for Gunicorn to serve.
 
-  > Available Python docker images can be found [here](https://hub.docker.com/_/python).
-
-To build the docker image, run it and test our web service, check the [instructions](./notebooks/course/4.2_web-service/README.md).
-
-With the Docker container ready, the model can be deployed on any infrastructure supporting Docker, such as AWS Elastic Beanstalk or Kubernetes.
-
+To build the docker image, run it and test our web service, check the [instructions](./notebooks/course/4.2_web-service/README.md). With the Docker container ready, the model can be deployed on any infrastructure supporting Docker, such as AWS Elastic Beanstalk or Kubernetes.
 
 > **ℹ️ Note:** Ensuring feature engineering in the serving code exactly matches training is critical for consistent predictions. 
 
