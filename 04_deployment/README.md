@@ -45,67 +45,50 @@ As takeaway:
 
 ## 🛠️ 4.2 Web-services: Deploying models with Flask and Docker
 
-#### Overview of Deployment Process Using Flask and Docker
-
-- The session focuses on deploying a machine learning model saved as a pickle file into a web service using Flask and Docker, without involving model registries like MLflow in this step   .
-- The deployment plan includes creating a virtual environment, scripting the model, wrapping it in a Flask app, and finally containerizing the application with Docker    .
+We will now focus on deploying a machine learning model saved as a pickle file into a web service using Flask and Docker, without involving model registries like MLflow in this step. This will be done by creating a virtual environment, scripting the model, wrapping it in a Flask app, and finally containerizing the application with Docker.
 
 #### Environment Setup and Version Management
-
-- It is crucial to match the exact version of scikit-learn used to create the pickle file to avoid incompatibility issues during unpickling; this is verified using `pip freeze` and installing the specific version in the virtual environment   .
-- Python 3.9 is preferred over newer versions (e.g., 3.10) for compatibility and stability with the libraries used   .
-- A virtual environment isolates dependencies specific to this project, avoiding conflicts with global Python packages   .
-- Dependency versions are pinned in `Pipfile` and `Pipfile.lock` to ensure reproducible environments across installations   .
-
-#### Creating Model Prediction Logic in Python
-
-- A `predict.py` file is created to:
-  - Load the model and dictionary vectorizer from the pickle file using `pickle.load`   .
-  - Define a `prepare_features` function that performs feature engineering identical to training (e.g., concatenating pickup and dropoff IDs as a new feature)    .
-  - Define a `predict` function that transforms features and generates predictions using the loaded model   .
-- Testing is done with a `test.py` script that imports the prediction functions and prints the output for sample ride data, verifying correctness before deployment   .
+It is crucial to match the exact version of scikit-learn used to create the pickle file to avoid incompatibility issues during unpickling; this is verified using `pip freeze | grep scikit-learn` or `pip list | grep scikit-learn`. We can then install the specific version in the virtual environment along with other necessary libraries specifyikng the version of Python that we want to use: `pipenv install scikit-learn==1.0.2 flask --python=3.9`. Note, we are using Python 3.9 for the course. A virtual environment is useful as it isolates dependencies specific to this project, avoiding conflicts with global Python packages. When using `Pipenv` for creating virtual environments, dependency versions are pinned in [`Pipfile`](./notebooks/course/4.2_web-service/Pipfile) and [`Pipfile.lock`](./notebooks/course/4.2_web-service/Pipfile.lock) to ensure reproducible environments across installations.
 
 #### Building the Flask Web Service
+First we create the model prediction logic in Python. For this purpose, we create a [predict.py](./notebooks/course/4.2_web-service/predict.py) script to:
+  - Load the model and dictionary vectorizer from the pickle file using `pickle.load`.
+  - Perform feature engineering as done during model training (e.g., concatenating pickup and dropoff IDs as a new feature).
+  - Transform features and generates predictions using the loaded model.
+Testing will be done with a [`test.py`](./notebooks/course/4.2_web-service/test.py) script that imports the prediction functions and prints the output for sample ride data, verifying correctness before deployment.
 
-- Flask application wraps the prediction logic to create an HTTP endpoint:
-  - Imports `Flask`, `request`, and `jsonify` to handle incoming JSON requests and return JSON responses   .
-  - Defines a route with a decorator that makes the prediction function accessible via HTTP POST requests to `/predict`   .
-  - The Flask app runs locally on port 9696 for development testing   .
-- The test script is modified to send HTTP POST requests to the Flask endpoint using the `requests` library, validating the deployed service works as expected    .
-- Flask's built-in server is intended only for development; a warning advises using a production-grade WSGI server like Gunicorn for deployment   .
+The Flask application wraps the prediction logic to create an HTTP endpoint:
+  - Imports `Flask`, `request`, and `jsonify` to handle incoming JSON requests and return JSON responses.
+  - Defines a route with a decorator that makes the prediction function accessible via HTTP POST requests to `/predict`.
+  - Runs locally on port 9696 for development testing.
+Note that **Flask's built-in server** is intended only for **development**. This said, launching the Flask app with `python predict.py` will raise a warning that advises using a production-grade Web Server Gateway Interface (WSGI) server like **Gunicorn** for deployment: 
+```sh
+gunicorn --bind=0.0.0.0:9696 predict:app
+```
+For testing: `python test.py`.
 
-#### Production Deployment with Gunicorn
-
-- Gunicorn is installed and used to serve the Flask app in production, binding the application to a specified host and port, improving robustness over Flask's development server   .
-- The `requests` library is installed as a development dependency only, since it is required for testing but not for serving the app in production   .
+> NB: The `requests` library is installed as a development dependency only: `pipenv install --dev requests`, since it is required for testing but not for serving the app in production.
 
 #### Dockerizing the Application
+We can create A [Dockerfile](./notebooks/course/4.2_web-service/Dockerfile) to containerize the Flask application. It will:
+  - Use a Python 3.9 slim base image to ensure consistency with the development environment.
+  - Update pip to the latest version to avoid issues with package installations (e.g., for packages like xgboost).
+  - Copy `Pipfile` and `Pipfile.lock` into the container and installs dependencies directly into the system Python environment (**no virtual environment inside Docker**). The ``--system`` and `--deploy` flags in the pipenv install command in the Dockerfile are used to install dependencies system-wide (skipping environment creation).
+  - Copy the model pickle file and the Flask app script into the container's working directory.
+  - Set the container to expose port 9696 (open the port in the container) and run the app using Gunicorn, by specifying the Flask app module and app variable for Gunicorn to serve.
 
-- A Dockerfile is created to containerize the Flask application:
-  - Uses a Python 3.9 slim base image to ensure consistency with the development environment    .
-  - Updates pip to the latest version to avoid issues with package installations (e.g., for packages like xgboost)  .
-  - Copies `Pipfile` and `Pipfile.lock` into the container and installs dependencies directly into the system Python environment (no virtual environment inside Docker)     .
-  - Copies the model pickle file and the Flask app script into the container's working directory  .
-  - Sets the container to expose port 9696 and runs the app using Gunicorn, specifying the Flask app module and app variable for Gunicorn to serve   .
+  > Available Python docker images can be found [here](https://hub.docker.com/_/python).
 
-#### Building and Running the Docker Container
+To build the docker image, run it and test our web service, check the [instructions](./notebooks/course/4.2_web-service/README.md).
 
-- The Docker image is built and tagged appropriately using the Dockerfile, pulling the base image and installing dependencies during build time  .
-- The container is run interactively with port mapping from host to container, enabling testing via localhost on port 9696   .
-- The same test script can be used to send requests to the model served inside the Docker container, validating the containerized deployment works correctly  .
+With the Docker container ready, the model can be deployed on any infrastructure supporting Docker, such as AWS Elastic Beanstalk or Kubernetes.
 
-#### Deployment Options and Next Steps
 
-- With the Docker container ready, the model can be deployed on any infrastructure supporting Docker, such as AWS Elastic Beanstalk or Kubernetes   .
-- Subsequent modules cover deploying to Kubernetes and integrating with model registries like MLflow for automated model management and retrieval, improving deployment workflows beyond manual file handling   .
+> **ℹ️ Note:** Ensuring feature engineering in the serving code exactly matches training is critical for consistent predictions. 
 
----
+> **ℹ️ Note:** Flask's built-in server is not suitable for production due to performance and security limitations; Gunicorn or similar WSGI servers are recommended for production deployments.
 
-> **ℹ️ Note:** Ensuring feature engineering in the serving code exactly matches training is critical for consistent predictions. This includes creating derived features like concatenated location IDs as strings, not integers    .
-
-> **ℹ️ Note:** Flask's built-in server is not suitable for production due to performance and security limitations; Gunicorn or similar WSGI servers are recommended for production deployments   .
-
-> **ℹ️ Note:** Installing testing dependencies like `requests` as development dependencies keeps production environments clean and minimal, avoiding unnecessary packages in deployed containers   .
+> **ℹ️ Note:** Installing testing dependencies like `requests` as development dependencies keeps production environments clean and minimal, avoiding unnecessary packages in deployed containers.
 
 ## 📉 4.3 Web-services: Getting the models from the model registry (MLflow)
 #### Model Deployment and Web Service Integration
