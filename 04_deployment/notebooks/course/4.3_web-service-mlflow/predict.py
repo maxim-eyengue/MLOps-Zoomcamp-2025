@@ -38,7 +38,7 @@ def predict_endpoint():
     # Make the predictions
     pred = predict(features)
 
-    # Dictionnary of results
+    # Dictionary of results
     result = {
         'duration': pred,
         'model_version': RUN_ID

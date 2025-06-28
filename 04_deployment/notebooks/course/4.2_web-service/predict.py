@@ -33,7 +33,7 @@ def predict_endpoint():
     # Make predictions
     pred = predict(features)
 
-    # Dictionnary with results
+    # Dictionary with results
     result = {
         'duration': pred
     }

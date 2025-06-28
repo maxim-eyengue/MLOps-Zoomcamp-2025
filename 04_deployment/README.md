@@ -45,7 +45,7 @@ As takeaway:
 
 ## 🛠️ 4.2 Web-services: Deploying models with Flask and Docker
 
-We will now focus on deploying a machine learning model saved as a pickle file into a web service using Flask and Docker, without involving model registries like MLflow in this step. This will be done by creating a virtual environment, scripting the model, wrapping it in a Flask app, and finally containerizing the application with Docker.
+We will now focus on deploying a machine learning model saved as a pickle file into a web service using Flask and Docker. This will be done by creating a virtual environment, scripting the model, wrapping it in a Flask app, and finally containerizing the application with Docker.
 
 #### Environment Setup and Version Management
 It is crucial to match the exact version of scikit-learn used to create the pickle file to avoid incompatibility issues during unpickling; this is verified using `pip freeze | grep scikit-learn` or `pip list | grep scikit-learn`. We can then install the specific version in the virtual environment along with other necessary libraries specifyikng the version of Python that we want to use: `pipenv install scikit-learn==1.0.2 flask --python=3.9`. Note, we are using Python 3.9 for the course. A virtual environment is useful as it isolates dependencies specific to this project, avoiding conflicts with global Python packages. When using `Pipenv` for creating virtual environments, dependency versions are pinned in [`Pipfile`](./notebooks/course/4.2_web-service/Pipfile) and [`Pipfile.lock`](./notebooks/course/4.2_web-service/Pipfile.lock) to ensure reproducible environments across installations.
@@ -87,10 +87,13 @@ To build the docker image, run it and test our web service, check the [instructi
 > **ℹ️ Note:** Installing testing dependencies like `requests` as development dependencies keeps production environments clean and minimal, avoiding unnecessary packages in deployed containers.
 
 ## 📉 4.3 Web-services: Getting the models from the model registry (MLflow)
-#### Model Deployment and Web Service Integration
-
-- Previously, a linear regression model was deployed as a web service using Flask with functions to prepare features and make predictions exposed as an endpoint for querying predictions  .
-- The current focus is on integrating this deployment with the MLflow model registry to retrieve models either by production stage or by specific run ID, demonstrated with a random forest model example   .
+Note that we will be running `MLFlow`:
+```sh
+mlflow server \
+    --backend-store-uri sqlite:///mlflow.db \
+    --default-artifact-root=mlflow-models # can be adjusted to specify the address of a remote s3 bucket
+```
+Previously, a linear regression model was deployed as a web service using Flask with functions to prepare features and make predictions exposed as an endpoint for querying predictions. We now need to integrate this deployment with the MLflow model registry to retrieve models either by production stage or by specific run ID. For that we will use a random forest model.
 
 #### MLflow Setup and Model Management
 
