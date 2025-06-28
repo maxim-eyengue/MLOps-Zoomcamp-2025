@@ -6,48 +6,39 @@
 ---
 
 ## 📌 4.1 Three ways of deploying a model
-#### Overview of Model Deployment in MLOps
+**Model deployment** is part of the **operate** phase in MLOps, following **design**, where requirements are checked to make sure we need ML to solve our problem, and **training** phases, where models are trained and productionized into pipelines. The output of training is a model ready for deployment.
 
-- Model deployment is part of the operate phase in MLOps, following design and training phases where requirements are gathered and models are trained and productionized into pipelines. The output of training is a model ready for deployment  .
-- Deployment choices depend on prediction latency requirements: whether immediate predictions are needed or if predictions can be delayed by hours, days, or weeks  .
-- Three primary deployment modes: batch mode (predictions at regular intervals), online mode as a web service (model always available for immediate predictions), and streaming mode (model listens and reacts to event streams)   .
+Deployment choices depend on prediction latency requirements: whether immediate predictions are needed or if predictions can be delayed by hours, days, or weeks. There are three primary deployment modes: batch/offline mode (predictions at regular intervals), online mode as a web service (model always available for immediate predictions), and streaming mode (model listens and reacts to event streams).
 
-#### Batch Mode Deployment
+### Batch Mode Deployment
 
-- Batch mode applies the model periodically (e.g., every 10 minutes, hourly, daily, weekly) to new data pulled from a database, producing predictions saved back to a database or storage   .
-- Typical batch workflow: a scheduled job pulls recent data, runs the model, writes predictions, and downstream processes consume these predictions for actions like reporting or marketing campaigns  .
-- Common use case: churn prediction in marketing, where users likely to stop using a service are identified daily or weekly and targeted with incentives. Immediate prediction is unnecessary, making batch mode suitable    .
+Batch mode applies the model periodically (e.g., every 10 minutes, hourly, daily, weekly) to new data pulled from a database, producing predictions saved back to a database or storage. Typically, a batch workflow is as follows: a scheduled job pulls recent data, runs the model, writes predictions, and downstream processes consume these predictions for actions like reporting or marketing campaigns. Churn prediction is a common use case in marketing: users likely to stop using a service are identified daily or weekly and targeted with incentives. Immediate prediction is unnecessary, making batch mode suitable.
 
-#### Web Service Deployment
+### Web Service Deployment
 
-- Web service deployment hosts the model as a continuously running service accessible via HTTP requests, returning predictions immediately upon request  .
-- Example: a taxi app where the user requests ride duration prediction instantly before booking; the model must be always available to provide immediate responses for user decisions   .
-- Web service involves a one-to-one client-server connection where the client sends a request, the service processes it, and returns a response while maintaining an active connection during processing   .
+Web service deployment hosts the model as a continuously running service accessible via HTTP requests, returning predictions immediately upon request. For example, a taxi app where the user requests ride duration prediction instantly before booking should be deployed through a web service as the model must be always available to provide immediate responses for user decisions. A web service involves a one-to-one client-server connection where the client sends a request, the service processes it, and returns a response while maintaining an active connection during processing.
 
-#### Streaming Mode Deployment
+### Streaming Mode Deployment
 
-- Streaming mode involves event-driven architecture with producers generating events and multiple independent consumers reading and reacting to these events asynchronously   .
-- Unlike web services, streaming uses a one-to-many or many-to-many relationship without explicit connections between producer and consumers; the producer pushes events without waiting for or knowing the consumers   .
-- Use cases include:
-  - Taxi app where backend produces ride events consumed by multiple models independently (e.g., tip prediction, more accurate ride duration updates)    .
-  - Content moderation systems (e.g., YouTube) where video upload events trigger multiple moderation models for copyright, explicit content, hate speech, etc., with their predictions aggregated for final decisions like video removal     .
-  - Recommendation systems where new content events are consumed to update user recommendations dynamically  .
+Streaming mode involves event-driven architecture with producers generating events and multiple independent consumers reading and reacting to these events asynchronously. Unlike web services, streaming uses a one-to-many or many-to-many relationship without explicit connections between producer and consumers: the producer pushes events without waiting for or knowing the consumers. Some Use cases include:
+  - Taxi app where backend produces ride events consumed by multiple services independently (e.g., tip prediction, more accurate ride duration predictions).
+  - Content moderation systems (e.g., YouTube) where video upload events trigger multiple moderation models for copyright, explicit content, hate speech, etc., with their predictions aggregated for final decisions like video removal.
+  - Recommendation systems where new content events are consumed to update user recommendations dynamically.
 
 #### Key Differences Between Deployment Modes
 
 | Feature                | Batch Mode                       | Web Service                      | Streaming                        |
 |------------------------|--------------------------------|---------------------------------|---------------------------------|
-| Prediction Latency     | Delayed, periodic (minutes to days) | Immediate, on-demand             | Near real-time, event-driven     |
-| Connectivity          | None during prediction run      | One-to-one, synchronous request | One-to-many, asynchronous events |
+| Prediction Latency     | Delayed, periodic (minutes, days, etc.) | Immediate, on-demand             | Near real-time, event-driven     |
+| Connectivity          | None during prediction run      | One-to-one, synchronous request | One-to-many or many-to-many, asynchronous events |
 | Use Case Examples     | Churn prediction, marketing campaigns | Taxi ride duration prediction    | Tip prediction, content moderation, recommendations |
 | Model Availability    | Runs only at scheduled times    | Always running                  | Always running, reacts to events |
 | Consumer-Producer Relationship | Single batch job             | Single client-server             | Multiple independent consumers   |
 
-#### Summary of Deployment Choice Considerations
-
-- Choose **batch mode** when immediate predictions are not critical and periodic updates suffice (e.g., churn detection, marketing)    .
-- Choose **web service mode** when predictions must be available instantly to support real-time user decisions (e.g., taxi duration estimation)    .
-- Choose **streaming mode** for event-driven systems requiring multiple independent reactions to data streams, supporting scalability and modularity (e.g., content moderation, multi-model prediction updates)     .
+As takeaway:
+- Choose **batch mode** when immediate predictions are not critical and periodic updates suffice (e.g., churn detection, marketing).
+- Choose **web service mode** when predictions must be available instantly to support real-time user decisions (e.g., taxi duration estimation).
+- Choose **streaming mode** for event-driven systems requiring multiple independent reactions to data streams, supporting scalability and modularity (e.g., content moderation, multi-model prediction updates).
 
 > **💡 Key Insight:** Deployment mode selection depends critically on prediction latency requirements and system architecture, balancing immediacy, scalability, and complexity to best fit the ML use case.  
                        
