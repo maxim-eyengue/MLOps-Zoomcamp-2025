@@ -4,10 +4,13 @@ import mlflow
 from flask import Flask, request, jsonify
 
 # Get the experiment run ID
-RUN_ID = os.getenv('RUN_ID')
+RUN_ID = os.getenv('MODEL_RUN_ID') # 1ca05c6d23f44066a4a4dcdbe1639de4
 
 # Get the model URI
-logged_model = f's3://mlflow-models-alexey/1/{RUN_ID}/artifacts/model' # logged_model = f'runs:/{RUN_ID}/model'
+logged_model = f'mlflow-models/1/{RUN_ID}/artifacts/model' # local URI
+# From MLFlow server: f'runs:/{RUN_ID}/model' 
+# From S3 bucket: f's3://mlflow-models-maxim/1/{RUN_ID}/artifacts/model'
+
 # Load the model
 model = mlflow.pyfunc.load_model(logged_model)
 
