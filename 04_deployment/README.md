@@ -87,54 +87,33 @@ To build the docker image, run it and test our web service, check the [instructi
 > **ℹ️ Note:** Installing testing dependencies like `requests` as development dependencies keeps production environments clean and minimal, avoiding unnecessary packages in deployed containers.
 
 ## 📉 4.3 Web-services: Getting the models from the model registry (MLflow)
+Previously, a linear regression model was deployed as a web service using Flask with functions to prepare features and make predictions, and exposed as an endpoint for querying predictions. We now need to integrate this deployment with the MLflow model registry to retrieve models either by production stage or by specific run ID. For that we will use a random forest model.
 Note that we will be running `MLFlow`:
 ```sh
 mlflow server \
     --backend-store-uri sqlite:///mlflow.db \
-    --default-artifact-root=mlflow-models # can be adjusted to specify the address of a remote s3 bucket
+    --default-artifact-root=mlflow-models # can be adjusted to specify a remote s3 bucket address: s3://mlflow-models-maxim 
 ```
-Previously, a linear regression model was deployed as a web service using Flask with functions to prepare features and make predictions exposed as an endpoint for querying predictions. We now need to integrate this deployment with the MLflow model registry to retrieve models either by production stage or by specific run ID. For that we will use a random forest model.
+Using a [notebook](./notebooks/course/4.3_web-service-mlflow/random-forest.ipynb), models and related artifacts (dictionary vectorizer, model parameters) will be logged and tracked in MLflow runs, allowing retrieval by run ID for deployment purposes. The model registry supports promoting models to production stages but using run IDs ensures exact version control in deployments.
 
-#### MLflow Setup and Model Management
+Note that the Flask environment should be configured to include MLflow and dependencies with a [pipfile](./notebooks/course/4.3_web-service-mlflow/Pipfile), ensuring proper package installation for running the prediction service. Setting the MLflow tracking URI correctly is critical for accessing the model registry and artifacts; misconfiguration leads to errors in loading models.
 
-- MLflow server is run locally with SQLite as the backend store and S3 as the artifact root, simplifying setup without requiring PostgreSQL   .
-- Models and related artifacts (dictionary vectorizer, model parameters) are logged and tracked in MLflow runs, allowing retrieval by run ID for deployment purposes   .
-- The model registry supports promoting models to production stages but using run IDs ensures exact version control in deployments   .
+While logging the model and the vectorizer in our [notebook](./notebooks/course/4.3_web-service-mlflow/random-forest.ipynb), it is good practtice to wrap them in a **pipeline** using `sklearn.pipeline.make_pipeline`. Combining the dictionary vectorizer and the random forest regressor into one pipeline object which is then logged and retrieved as a single model artifact simplifies artifact management and model deployment.
 
-#### Loading Models and Artifacts in Flask Application
+In our Flask application, it is also recommended to return **model versioning** in the response. Including the model run ID (version) in the prediction response payload provides traceability of which model version generated each prediction, aiding in debugging and auditing.
 
-- Model and dictionary vectorizer artifacts are downloaded from MLflow using the MLflow client in the Flask app, requiring manual handling of artifact paths and temporary storage    .
-- The Flask environment is configured to include MLflow and dependencies with a pipfile, ensuring proper package installation for running the prediction service   .
-- Setting the MLflow tracking URI correctly is critical for accessing the model registry and artifacts; misconfiguration leads to errors in loading models   .
+Relying on the MLflow tracking server at runtime can cause deployment failures if the server is down, especially when scaling new model instances that need to connect to it. A better approach is to bypass the tracking server by directly fetching models from the artifact storage (e.g., S3, mlflow-models folder) using the full artifact URI, removing dependency on the MLflow tracking server during prediction serving.
 
-#### Improving Model Artifact Handling with Pipelines
-
-- Carrying dictionary vectorizer separately as an artifact is cumbersome; combining it with the model into a single pipeline simplifies deployment and artifact management   .
-- Using `sklearn.pipeline.make_pipeline`, the dictionary vectorizer and random forest regressor are combined into one pipeline object which is then logged and retrieved as a single model artifact    .
-- This approach eliminates the need to separately download and manage vectorizer artifacts, resulting in cleaner and simpler prediction code in the Flask app   .
-
-#### Model Versioning and Response Enhancement
-
-- Including the model run ID (version) in the prediction response payload provides traceability of which model version generated each prediction, aiding in debugging and auditing  .
-
-#### Reducing Dependency on MLflow Tracking Server
-
-- Relying on the MLflow tracking server at runtime can cause deployment failures if the server is down, especially when scaling new model instances that need to connect to it    .
-- A better approach is to bypass the tracking server by directly fetching models from the artifact storage (e.g., S3) using the full artifact URI, removing dependency on the MLflow tracking server during prediction serving   .
-
-#### Configuration and Deployment Flexibility
-
-- Model run ID and artifact locations can be configured via environment variables, enabling flexible deployment setups such as Kubernetes where model versions can be updated by changing environment variables without code changes    .
-- This flexibility allows seamless integration with containerized deployments and orchestration platforms, supporting dynamic model version updates and scalable serving architectures  .
-
----
+Model run ID and other information can be configured via environment variables, enabling flexible deployment setups such as Kubernetes where model versions can be updated by changing environment variables without code changes. Note that some [instructions](./notebooks/course/4.3_web-service-mlflow/README.md) are available in case we use an S3 bucket. The most important we will need in our case is saving the run id:
+```sh
+export MODEL_RUN_ID="1ca05c6d23f44066a4a4dcdbe1639de4"
+```
+This flexibility allows seamless integration with containerized deployments and orchestration platforms, supporting dynamic model version updates and scalable serving architectures. We can then test our [Flask application](./notebooks/course/4.3_web-service-mlflow/predict.py) by running it: `python predict.py` and [testing](./notebooks/course/4.3_web-service-mlflow/test.py) it in a different window: `python test.py`. Once done, we can dockerized the application as already done earlier.
 
 > **💡 Key Insight:** Combining feature transformation and model into a single pipeline artifact simplifies deployment by reducing artifact management complexity and improves code maintainability. Direct artifact URI usage removes runtime dependencies on the tracking server, enhancing reliability and scalability of model serving.  
->  
+
 > **❗ Important:** Always include model version information in prediction responses for effective model management and traceability in production systems.  
->  
-> **⚠️ Warning:** Dependence on the MLflow tracking server at runtime can cause service outages if the server is unavailable; avoid this by direct artifact fetching from storage.  
->  
+
 > **ℹ️ Note:** Environment variable configuration for model identifiers supports flexible and scalable deployment strategies such as Kubernetes.  
                             
 
