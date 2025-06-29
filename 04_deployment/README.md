@@ -217,8 +217,8 @@ The script is parameterized to accept input and output file paths, allowing flex
 
 
 #### Dependencies and Packaging
-- The script can be packaged in a Docker container with all dependencies specified to ensure reproducibility and ease of deployment across environments. Required Python libraries include `pandas`, `pyarrow` or `fastparquet` for Parquet file handling, `mlflow` for model management, `scikit-learn` for model prediction, `boto3` for S3 access, and `uuid` (built-in).    
-- For full batch deployment, the script can be scheduled and run on cloud services such as AWS Batch, ECS, or Kubernetes jobs, enabling automated, scalable batch scoring pipelines  .
+
+The script can be packaged in a Docker container with all dependencies specified to ensure reproducibility and ease of deployment across environments. Required Python libraries include `pandas`, `pyarrow` or `fastparquet` for Parquet file handling, `mlflow` for model management, `scikit-learn` for model prediction, `boto3` for S3 access, and `uuid` (built-in). For full batch deployment, the script can be scheduled and run on cloud services such as AWS Batch, ECS, or Kubernetes jobs, enabling automated, scalable batch scoring pipelines.
 
 
 > **💡 Key Insight:** Batch deployment scripts should be self-contained, parameterized, and organized into functions to facilitate automation, reproducibility, and scalability in MLOps workflows.
