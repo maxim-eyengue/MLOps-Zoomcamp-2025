@@ -119,13 +119,12 @@ This flexibility allows seamless integration with containerized deployments and 
 
 ## 🖥️ 4.4 Streaming: Deploying models with Kinesis and Lambda
 #### Overview of Streaming Model Deployment with AWS Kinesis and Lambda
-- AWS Kinesis is an event streaming service, similar to Kafka or other message brokers, used to send and read events in real time; AWS Lambda functions can consume events from Kinesis streams to process data without managing servers   .
-- The video demonstrates creating a Kinesis stream, configuring a Lambda function to consume from that stream, and embedding a machine learning model inside the Lambda for real-time predictions on streaming data   .
-- This approach contrasts with prior methods deploying models as web services; here, the Lambda reacts to streaming events for immediate inference, useful for scenarios like updating ride duration predictions as rides progress   .
+AWS Kinesis is an event streaming service, similar to Kafka or other message brokers, used to send and read events in real time; AWS Lambda functions can consume events from Kinesis streams to process data without managing servers.
+
+We will create a Kinesis stream, configuring a Lambda function to consume from that stream, and embedding a machine learning model inside the Lambda for real-time predictions on streaming data. This approach contrasts with prior methods deploying models as web services; here, the Lambda reacts to streaming events for immediate inference, useful for scenarios like updating ride duration predictions as rides progress.
 
 #### AWS Lambda Fundamentals and Role Configuration
-- Lambda enables running code without managing servers or infrastructure; you write code that AWS executes in response to triggers like Kinesis events   .
-- To allow Lambda to read from Kinesis, an IAM role with specific permissions (e.g., read records from Kinesis streams) must be created and attached to the Lambda function; these permissions include access to shards (partitions of the stream) and logs    .
+Lambda enables running code without managing servers or infrastructure; you write code that AWS executes in response to triggers like Kinesis events. To allow Lambda to read from Kinesis, an IAM role with specific permissions (e.g., read records from Kinesis streams) must be created and attached to the Lambda function; these permissions include access to shards (partitions of the stream) and logs.
 - Execution roles need fine-grained policies restricting Lambda’s access only to necessary services and resources, improving security and governance   .
 
 #### Creating and Testing Lambda Functions with Kinesis Triggers
