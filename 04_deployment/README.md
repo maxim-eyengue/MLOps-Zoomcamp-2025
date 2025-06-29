@@ -198,8 +198,6 @@ Lambda memory and timeout settings affect function performance and cost; increas
   
 
 ## 🧰 4.5 Batch: Preparing a scoring script
-#### Batch Deployment of Machine Learning Models
-
 - Batch deployment involves applying a trained model offline to a batch of data, differing from online mode where a model is deployed as a web service handling real-time requests. Batch deployment is useful for analytical purposes such as evaluating deviations between actual and predicted values over a dataset   .
 - The example use case is predicting taxi ride durations and analyzing the difference between actual and predicted durations to detect patterns like traffic jams, despite the model not being ideal for this task   .
 - The process starts with a notebook originally used for training and retrieving the model from a model registry. This notebook is modified to apply the model for scoring rather than training   .
