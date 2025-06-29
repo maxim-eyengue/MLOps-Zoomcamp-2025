@@ -1,6 +1,7 @@
-
+# Necessary import
 import lambda_function
 
+# Event data
 event = {
     "Records": [
         {
@@ -22,6 +23,7 @@ event = {
     ]
 }
 
-
+# Trigger the lambda function
 result = lambda_function.lambda_handler(event, None)
+# Print the resulting prediction
 print(result)
