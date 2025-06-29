@@ -1,5 +1,3 @@
 ## Batch deployment
 
-* Turn the notebook for training a model into a notebook for applying the model
-* Turn the notebook into a script 
-* Clean it and parametrize
+The training notebook is turned into a [scoring notebook](./score.ipynb) that applies the model. This notebook is then converted to a [script](./score.py), to be cleaned and parameterized.
