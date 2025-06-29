@@ -1,8 +1,6 @@
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-
 from prefect import flow
-
 import score
 
 
@@ -16,7 +14,7 @@ def ride_duration_prediction_backfill():
     while d <= end_date:
         score.ride_duration_prediction(
             taxi_type='green',
-            run_id='e1efc53e9bd149078b0c12aeaa6365df',
+            run_id='1ca05c6d23f44066a4a4dcdbe1639de4',
             run_date=d
         )
 

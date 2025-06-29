@@ -7,6 +7,7 @@ import uuid
 import mlflow  
 import pandas as pd 
 
+from pathlib import Path
 from datetime import datetime  
 from prefect import task, flow, get_run_logger 
 from prefect.context import get_run_context
@@ -96,18 +97,24 @@ def apply_model(input_file, run_id, output_file):
     save_results(df, y_pred, run_id, output_file)
     return output_file
 
-
+# Function for data paths
 def get_paths(run_date, taxi_type, run_id):
-    prev_month = run_date - relativedelta(months=1)
+    prev_month = run_date - relativedelta(months = 1)
     year = prev_month.year
     month = prev_month.month 
 
-    input_file = f's3://nyc-tlc/trip data/{taxi_type}_tripdata_{year:04d}-{month:02d}.parquet'
-    output_file = f's3://nyc-duration-prediction-alexey/taxi_type={taxi_type}/year={year:04d}/month={month:02d}/{run_id}.parquet'
+    # Input data address
+    input_file = f'https://d37ci6vzurychx.cloudfront.net/trip-data/{taxi_type}_tripdata_{year:04d}-{month:02d}.parquet'
+    # f's3://nyc-tlc/trip data/{taxi_type}_tripdata_{year:04d}-{month:02d}.parquet'
+    # Address of the output
+    output_file = f'output/{taxi_type}/{year:04d}-{month:02d}-{run_id}.parquet'
+    # f's3://nyc-duration-prediction-alexey/taxi_type={taxi_type}/year={year:04d}/month={month:02d}/{run_id}.parquet'
 
+    # Input and output files data paths
     return input_file, output_file
 
 
+# Function for predicting ride durations
 @flow
 def ride_duration_prediction(
         taxi_type: str,
@@ -126,18 +133,27 @@ def ride_duration_prediction(
     )
 
 
+# Main function
 def run():
+    # Script parameterization
     taxi_type = sys.argv[1] # 'green'
     year = int(sys.argv[2]) # 2021
     month = int(sys.argv[3]) # 3
+    run_id = sys.argv[4] # '1ca05c6d23f44066a4a4dcdbe1639de4'
+    
+    # Folder path for saving results
+    output_folder = Path(f'output/{taxi_type}')
+    # Create the results folder
+    output_folder.mkdir(exist_ok = True)
 
-    run_id = sys.argv[4] # 'e1efc53e9bd149078b0c12aeaa6365df'
-
+    # Make ride duration prediction
     ride_duration_prediction(
-        taxi_type=taxi_type,
-        run_id=run_id,
-        run_date=datetime(year=year, month=month, day=1)
+        taxi_type = taxi_type,
+        run_id = run_id,
+        run_date = datetime(year = year, month = month, day = 1)
     )
 
+# If the script is executed
 if __name__ == '__main__':
+    # Run the main function
     run()
