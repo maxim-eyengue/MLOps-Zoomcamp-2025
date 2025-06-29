@@ -1,5 +1,7 @@
+# Necessary import
 import requests 
 
+# Event data
 event = {
     "Records": [
         {
@@ -21,7 +23,9 @@ event = {
     ]
 }
 
-
+# Address for making request
 url = 'http://localhost:8080/2015-03-31/functions/function/invocations'
-response = requests.post(url, json=event)
+# Send the request to trigger the lambda function
+response = requests.post(url, json = event)
+# Get the response
 print(response.json())
