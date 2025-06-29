@@ -23,6 +23,7 @@ aws kinesis put-record \
     --partition-key 1 \
     --data "Hello, this is a test."
 ```
+The key is the ride id.
 
 Decoding base64
 
@@ -109,7 +110,7 @@ echo ${RESULT} | jq -r '.Records[0].Data' | base64 --decode
 
 ```bash
 export PREDICTIONS_STREAM_NAME="ride_predictions"
-export RUN_ID="e1efc53e9bd149078b0c12aeaa6365df"
+export MODEL_RUN_ID="1ca05c6d23f44066a4a4dcdbe1639de4"
 export TEST_RUN="True"
 
 python test.py
@@ -123,7 +124,7 @@ docker build -t stream-model-duration:v1 .
 docker run -it --rm \
     -p 8080:8080 \
     -e PREDICTIONS_STREAM_NAME="ride_predictions" \
-    -e RUN_ID="e1efc53e9bd149078b0c12aeaa6365df" \
+    -e RUN_ID="1ca05c6d23f44066a4a4dcdbe1639de4" \
     -e TEST_RUN="True" \
     -e AWS_DEFAULT_REGION="eu-west-1" \
     stream-model-duration:v1
