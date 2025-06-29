@@ -117,47 +117,63 @@ This flexibility allows seamless integration with containerized deployments and 
 > **ℹ️ Note:** Environment variable configuration for model identifiers supports flexible and scalable deployment strategies such as Kubernetes.  
                             
 
-## 🖥️ 4.4 Streaming: Deploying models with Kinesis and Lambda
-#### Overview of Streaming Model Deployment with AWS Kinesis and Lambda
+## 🖥️ 4.4 Streaming: Deploying models with Kinesis and Lambda  
 AWS Kinesis is an event streaming service, similar to Kafka or other message brokers, used to send and read events in real time; AWS Lambda functions can consume events from Kinesis streams to process data without managing servers.
 
-We will create a Kinesis stream, configuring a Lambda function to consume from that stream, and embedding a machine learning model inside the Lambda for real-time predictions on streaming data. This approach contrasts with prior methods deploying models as web services; here, the Lambda reacts to streaming events for immediate inference, useful for scenarios like updating ride duration predictions as rides progress.
+We will create a Kinesis stream, configuring a Lambda function to consume from that stream, and embedding a machine learning model inside the Lambda for real-time predictions on streaming data. This approach contrasts with prior methods deploying models as web services; here, the Lambda reacts to streaming events for immediate inference, useful for scenarios like updating ride duration predictions as rides progress using a more accurate model than the previous one already deployed.
+
+> [AWS Lambda Notes from the ML Zoomcamp](https://github.com/maxim-eyengue/Python-Codes/blob/main/ML_Zoomcamp_2024/09_serverless/Summary_Session_09.md)
+
+> [Tutorial: Using Amazon Lambda with Amazon Kinesis](https://docs.amazonaws.cn/en_us/lambda/latest/dg/with-kinesis-example.html)
+
 
 #### AWS Lambda Fundamentals and Role Configuration
-Lambda enables running code without managing servers or infrastructure; you write code that AWS executes in response to triggers like Kinesis events. To allow Lambda to read from Kinesis, an IAM role with specific permissions (e.g., read records from Kinesis streams) must be created and attached to the Lambda function; these permissions include access to shards (partitions of the stream) and logs.
-- Execution roles need fine-grained policies restricting Lambda’s access only to necessary services and resources, improving security and governance   .
+Lambda enables running code without managing servers or infrastructure. You write code that AWS executes in response to triggers like Kinesis events. To allow Lambda to read from Kinesis, an IAM role with specific permissions (e.g., read records from Kinesis streams) must be created and attached to the Lambda function. These permissions include access to shards (partitions of the stream) and logs. Execution roles need fine-grained policies restricting Lambda’s access only to necessary services and resources, improving security and governance. The predefine permission policies that we will need are accessible with the `AWSLambdaKinesisExecutionRole`.
 
 #### Creating and Testing Lambda Functions with Kinesis Triggers
-- Lambda functions can be written in Python, with event payloads representing Kinesis records; initial tests involve printing events to CloudWatch logs to verify the Lambda is triggered correctly     .
-- Events from Kinesis arrive as batches of records encoded in base64; decoding these is necessary to extract the original payload, often JSON-formatted data representing domain-specific events (e.g., ride information)      .
-- Testing involves sending sample events to the Kinesis stream and observing Lambda’s processing and logging behavior, ensuring correct decoding and handling of multiple records per invocation      .
+Lambda functions can be written in Python, with event payloads representing Kinesis records; initial tests involve printing events to CloudWatch logs to verify the Lambda is triggered correctly. Events from Kinesis arrive as batches of records encoded in base64; decoding these is necessary to extract the original payload, often JSON-formatted data representing domain-specific events (e.g., ride information). Testing involves sending sample events to the Kinesis stream and observing Lambda’s processing and logging behavior, ensuring correct decoding and handling of multiple records per invocation.
 
-#### Handling Streaming Event Correlation and Output Streams
-- Because streaming is asynchronous and decoupled, each event needs a unique identifier (e.g., ride ID) to correlate input events with their predictions or outputs later    .
-- Instead of returning predictions directly (as in synchronous web services), Lambda writes prediction results to a separate Kinesis stream; this requires additional permissions for Lambda to put records into the output stream       .
-- Output events include metadata such as model name and version to track which model produced the prediction, important when multiple consumers or models exist in the streaming architecture   .
+We will create a Lambda function using the AWS UI and specifying the role created earlier. We will also test the function using a new event. Because streaming is asynchronous and decoupled, each event needs a unique identifier to correlate input events with their predictions or outputs later. For that, we will add an ID (e.g., ride_id) as part of the results from the handler of our [lambda function](./notebooks/course/4.4_streaming/lambda_function.py).
+
+Instead of returning predictions directly (as in synchronous web services), Lambda writes prediction results to a separate Kinesis stream; this requires additional permissions for Lambda to put records into the output stream. Output events include metadata such as model name and version to track which model produced the prediction, important when multiple consumers or models exist in the streaming architecture. Note that we will have to create a Kinesis Data stream (named `ride_events`) on provisioned mode (data stream capavity is fixed vs on-demand). We will only set one shard as there won't be a lot of requests. Shards are paid hourly. In the Lambda function we will set the Kinesis Data stream as trigger.
+
+> Ps: Make sure to attach the policy permissions  to the IAM role used.
 
 #### Using AWS SDK (boto3) for Kinesis Interaction
-- The Python boto3 library is used within Lambda to interact with Kinesis streams programmatically, sending prediction events to the output stream using `put_record` or batch operations like `put_records` for efficiency      .
-- Proper error handling and IAM permissions are critical to ensure Lambda can write to Kinesis without access denials      .
+The Python `boto3` library is used within Lambda to interact with Kinesis streams programmatically, sending prediction events to the output stream using `put_record` or batch operations like `put_records` for efficiency via a kinesis boto3 client. Proper error handling and IAM permissions are critical to ensure Lambda can write to Kinesis without access denials. We will create a new policy for that and attah it to the role set earlier.
 
 #### Reading from Kinesis Streams Outside Lambda
-- The AWS CLI can be used to read records from a Kinesis stream, involving obtaining a shard iterator and fetching records; this is useful for debugging or consuming stream data outside Lambda functions       .
-- Stream records are base64 encoded and require decoding to reveal the original JSON payload representing prediction results or other data  .
+The AWS CLI can be used to read records from a Kinesis stream, involving obtaining a shard iterator and fetching records; this is useful for debugging or consuming stream data outside Lambda functions. Stream records are base64 encoded and require decoding to reveal the original JSON payload representing prediction results or other data. This should be done in the Lambda function and also in the CLI. After sending the data event to the lambda function, we can check its logs to understand what happened.
 
-#### Packaging Lambda with Machine Learning Models Using Docker
-- To include complex dependencies and machine learning models (e.g., MLflow pipelines), Lambda functions can be packaged as container images using Docker, enabling consistent environments and easier dependency management     .
-- AWS provides base Docker images for Lambda functions with Python runtimes; these images can be extended by installing necessary Python packages (mlflow, scikit-learn, boto3) and copying the Lambda code and model files    .
-- The Docker image must specify the Lambda handler function as the entry point, following AWS Lambda container image conventions  .
+> Here are some [instructions](./notebooks/course/4.4_streaming/README.md) for the various interaction between Kinesis and Lambda using the CLI. 
 
-#### Building, Testing, and Deploying the Dockerized Lambda
-- After building the Docker image locally or on a remote instance, the image is pushed to AWS Elastic Container Registry (ECR), a managed Docker container registry service, for deployment to Lambda     .
-- Lambda functions can be created or updated to use container images by specifying the ECR image URI and configuring environment variables such as prediction stream names and model run IDs    .
-- Proper IAM roles must be updated to grant Lambda access to required services including Kinesis streams and S3 buckets storing model artifacts       .
+> We can use `jq` for formatting json result in the CLI: `echo $RESULT | jq` and access data too. To install this tool: `brew install jq`.
+
+> NB: Our [lambda function](./notebooks/course/4.4_streaming/lambda_function.py) can be tested locally using a python [script](./notebooks/course/4.4_streaming/test.py):
+```sh
+# Manage environment variables for the lambda function
+export PREDICTIONS_STREAM_NAME="ride_predictions"
+export MODEL_RUN_ID="1ca05c6d23f44066a4a4dcdbe1639de4"
+export TEST_RUN="True"
+
+# Run the test
+python test.py
+```
+
+
+#### Packaging and deploying Lambda with Machine Learning Models Using Docker
+To include complex dependencies and machine learning models (e.g., MLflow pipelines), Lambda functions can be packaged as container images using [Docker](./notebooks/course/4.4_streaming/Dockerfile), enabling consistent [environments](./notebooks/course/4.4_streaming/Pipfile) and easier dependency management. AWS provides [base Docker images](https://gallery.ecr.aws/lambda/python) for Lambda functions with Python runtimes; these images can be extended by installing necessary Python packages (mlflow, scikit-learn, boto3) and copying the Lambda code and model files. The [Docker image](./notebooks/course/4.4_streaming/Dockerfile) must specify the Lambda handler function as the entry point, following AWS Lambda container image conventions.
+
+> NB: In our predictions result, it is goood practice to specify the model used with its version along with the event id and the predicted value.
+
+After building the Docker image locally or on a remote instance, the image is pushed to **AWS Elastic Container Registry (ECR)**, a managed Docker container registry service, for deployment to Lambda. Lambda functions can be created or updated to use container images by specifying the ECR image URI and configuring environment variables such as prediction stream names and model run IDs. Proper IAM roles must be updated to grant Lambda access to required services including Kinesis streams and S3 buckets storing model artifacts.
+
+> Reminder: [Instructions](./notebooks/course/4.4_streaming/README.md) on how to build and run the docker container are available. It will either work on a remote instance with an instance profile (a way of giving permission to an EC2 instance without providing access keys), or locally (need to specify access keys).
+
+> Important: We copied the [mlflow models folder](./notebooks/course/4.4_streaming/mlflow-models/) in the docker image with: `COPY [ "mlflow-models", "./" ]` as we did not save the model to a remote s3 bucket. To test the docker image, we can use a [script](./notebooks/course/4.4_streaming/test_docker.py).
 
 #### Performance Tuning and Lambda Configuration
-- Lambda memory and timeout settings affect function performance and cost; increasing memory can speed up execution but also increases cost proportionally    .
-- Initial invocations may be slower due to cold starts and model loading; subsequent invocations benefit from caching and are faster   .
+Lambda memory and timeout settings affect function performance and cost; increasing memory can speed up execution but also increases cost proportionally. Initial invocations may be slower due to cold starts and model loading; subsequent invocations benefit from caching and are faster.
 
 #### Summary of Key Steps and Concepts
 | Step                          | Description                                                                                                   |
@@ -172,13 +188,12 @@ Lambda enables running code without managing servers or infrastructure; you writ
 | Monitor and Tune              | Use CloudWatch logs for debugging and adjust memory/timeouts for optimal performance                           |
 
 #### Important Clarifications and Insights
-> **AWS Lambda’s main promise is running code without managing servers; you only care that your code executes in response to events, abstracting away infrastructure details.**  
-> **Streaming architectures require careful event correlation via unique IDs because responses are not synchronous as with traditional request-response web services.**  
-> **Decoding base64 payloads and handling batches of records are essential when processing Kinesis events in Lambda.**  
-> **IAM roles and permissions must be carefully crafted to allow Lambda to read from and write to specific Kinesis streams and access S3 model artifacts securely.**  
-> **Packaging ML models into Lambda via Docker containers simplifies dependency management and ensures consistent runtime environments.**  
-           
-
+> **AWS Lambda**’s main promise is running code **without managing servers**; you only care that your code executes in response to events, abstracting away infrastructure details.
+> Streaming architectures require careful **event correlation via unique IDs** because responses are not synchronous as with traditional request-response web services. 
+> **Decoding base64 payloads** and **handling batches** of records are essential when processing Kinesis events in Lambda. 
+> **IAM roles and permissions** must be carefully crafted to allow Lambda to read from and write to specific Kinesis streams and access S3 model artifacts securely.  
+> **Packaging ML models** into **Lambda** via **Docker** containers simplifies dependency management and ensures consistent runtime environments.    
+> We can crate a **lambda function** based on a **docker image**. Using the **ECR** simplifies the process.     
 > **Cost considerations:** Each Kinesis shard costs money per hour, and Lambda memory size affects invocation cost; always balance resource allocation with budget and performance needs.  
   
 
