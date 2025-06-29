@@ -200,18 +200,7 @@ Lambda memory and timeout settings affect function performance and cost; increas
 ## 🧰 4.5 Batch: Preparing a scoring script
 Batch deployment involves applying a trained model offline to a batch of data, differing from online mode where a model is deployed as a web service handling real-time requests. Batch deployment is useful for analytical purposes such as evaluating deviations between actual and predicted values over a dataset. The example use case is not an ideal one: we will predict taxi ride durations and analyze the difference between actual and predicted durations to detect patterns like traffic jams. We will turn a [training notebook](./notebooks/course/4.3_web-service-mlflow/random-forest.ipynb) into a [scoring notebook](./notebooks/course/4.5_batch/score.ipynb) that applies the trained model instead of just training it.
 
-#### Preparing the Scoring Script
-
-- The notebook is cleaned by removing training-related code, focusing solely on loading data and applying the model for prediction. The model is accessed via MLflow from an S3 bucket using a specific run ID    .
-- The predicted duration is adjusted to the correct units (minutes instead of seconds) for consistency, though accuracy is not the focus here  .
-- Typically, the target variable (duration) is not present in the data for scoring, but here it is kept for analytical comparison between actual and predicted durations  .
-- Data preprocessing includes preparing categorical features and converting data into dictionaries for the model’s predict function   .
-- The scoring results are stored in a new DataFrame that includes unique ride IDs, metadata (like pickup time and locations), actual durations, predicted durations, and the difference between actual and predicted values for downstream analytics or dashboards      .
-
-#### Generating Unique Identifiers for Records
-
-- Since the dataset lacks a natural unique ride ID, universally unique identifiers (UUIDs) are generated for each row to uniquely identify rides. This is done in Python using the built-in `uuid` library, specifically with `uuid4`    .
-- These UUIDs are added as a new column to the DataFrame, allowing predictions to be linked back to individual rides   .
+Since the dataset lacks a natural unique ride ID, universally unique identifiers (UUIDs) are generated for each row to uniquely identify rides. This is done in Python using the built-in `uuid` library, specifically with `uuid4`. These UUIDs are added as a new column to the DataFrame, allowing predictions to be linked back to individual rides.
 
 #### Parameterizing Input and Output
 

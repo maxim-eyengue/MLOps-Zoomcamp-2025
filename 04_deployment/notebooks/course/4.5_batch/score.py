@@ -1,29 +1,19 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import os
+# Necessary import
 import sys
-
 import uuid
-import pickle
+import mlflow  
+import pandas as pd 
 
-from datetime import datetime
-
-import pandas as pd
-
-import mlflow
-
-from prefect import task, flow, get_run_logger
+from datetime import datetime  
+from prefect import task, flow, get_run_logger 
 from prefect.context import get_run_context
-
-from dateutil.relativedelta import relativedelta
-
-from sklearn.feature_extraction import DictVectorizer
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_squared_error
-from sklearn.pipeline import make_pipeline
+from dateutil.relativedelta import relativedelta  
 
 
+# Function to generate ride IDs
 def generate_uuids(n):
     ride_ids = []
     for i in range(n):
@@ -31,37 +21,48 @@ def generate_uuids(n):
     return ride_ids
 
 
+# Function for reading the data
 def read_dataframe(filename: str):
+    # read the parquet file
     df = pd.read_parquet(filename)
 
+    # Feature engineering to create a duration column
     df['duration'] = df.lpep_dropoff_datetime - df.lpep_pickup_datetime
+    # Convert durations to minutes
     df.duration = df.duration.dt.total_seconds() / 60
+    # Filter durations
     df = df[(df.duration >= 1) & (df.duration <= 60)]
-    
+    # Set the ride ID
     df['ride_id'] = generate_uuids(len(df))
+    return df # to return the prepared dataframe
 
-    return df
-
-
+# Function for building data dictionaries
 def prepare_dictionaries(df: pd.DataFrame):
+    # Set of categorical features
     categorical = ['PULocationID', 'DOLocationID']
+    # Convert categorical features to string
     df[categorical] = df[categorical].astype(str)
     
+    # Create a trajet feature
     df['PU_DO'] = df['PULocationID'] + '_' + df['DOLocationID']
+    # Set of features
+    categorical = ['PU_DO'] # categorical
+    numerical = ['trip_distance'] # numerical
+    # Build the data dictionaries
+    dicts = df[categorical + numerical].to_dict(orient = 'records')
+    return dicts # to return dictionaries
 
-    categorical = ['PU_DO']
-    numerical = ['trip_distance']
-    dicts = df[categorical + numerical].to_dict(orient='records')
-    return dicts
-
-
+# Function for loading the model
 def load_model(run_id):
-    logged_model = f's3://mlflow-models-alexey/1/{run_id}/artifacts/model'
+    # Get the model URI
+    logged_model = f'mlflow-models/1/{run_id}/artifacts/model' # f's3://mlflow-models-alexey/1/{run_id}/artifacts/model'
+    # Load and return the model
     model = mlflow.pyfunc.load_model(logged_model)
-    return model
+    return model 
 
-
+# Function for saving the results to a data frame
 def save_results(df, y_pred, run_id, output_file):
+    # Build a dataframe with input and predictions information
     df_result = pd.DataFrame()
     df_result['ride_id'] = df['ride_id']
     df_result['lpep_pickup_datetime'] = df['lpep_pickup_datetime']
@@ -72,9 +73,10 @@ def save_results(df, y_pred, run_id, output_file):
     df_result['diff'] = df_result['actual_duration'] - df_result['predicted_duration']
     df_result['model_version'] = run_id
 
-    df_result.to_parquet(output_file, index=False)
+    # Save the result dataframe
+    df_result.to_parquet(output_file, index = False)
 
-
+# Function for applying the model
 @task
 def apply_model(input_file, run_id, output_file):
     logger = get_run_logger()
@@ -137,10 +139,5 @@ def run():
         run_date=datetime(year=year, month=month, day=1)
     )
 
-
 if __name__ == '__main__':
     run()
-
-
-
-
