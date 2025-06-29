@@ -198,9 +198,7 @@ Lambda memory and timeout settings affect function performance and cost; increas
   
 
 ## 🧰 4.5 Batch: Preparing a scoring script
-- Batch deployment involves applying a trained model offline to a batch of data, differing from online mode where a model is deployed as a web service handling real-time requests. Batch deployment is useful for analytical purposes such as evaluating deviations between actual and predicted values over a dataset   .
-- The example use case is predicting taxi ride durations and analyzing the difference between actual and predicted durations to detect patterns like traffic jams, despite the model not being ideal for this task   .
-- The process starts with a notebook originally used for training and retrieving the model from a model registry. This notebook is modified to apply the model for scoring rather than training   .
+Batch deployment involves applying a trained model offline to a batch of data, differing from online mode where a model is deployed as a web service handling real-time requests. Batch deployment is useful for analytical purposes such as evaluating deviations between actual and predicted values over a dataset. The example use case is not an ideal one: we will predict taxi ride durations and analyze the difference between actual and predicted durations to detect patterns like traffic jams. We will turn a [training notebook](./notebooks/course/4.3_web-service-mlflow/random-forest.ipynb) into a [scoring notebook](./notebooks/course/4.5_batch/score.ipynb) that applies the trained model instead of just training it.
 
 #### Preparing the Scoring Script
 
