@@ -198,37 +198,28 @@ Lambda memory and timeout settings affect function performance and cost; increas
   
 
 ## 🧰 4.5 Batch: Preparing a scoring script
-Batch deployment involves applying a trained model offline to a batch of data, differing from online mode where a model is deployed as a web service handling real-time requests. Batch deployment is useful for analytical purposes such as evaluating deviations between actual and predicted values over a dataset. The example use case is not an ideal one: we will predict taxi ride durations and analyze the difference between actual and predicted durations to detect patterns like traffic jams. We will turn a [training notebook](./notebooks/course/4.3_web-service-mlflow/random-forest.ipynb) into a [scoring notebook](./notebooks/course/4.5_batch/score.ipynb) that applies the trained model instead of just training it.
+Batch deployment involves applying a trained model offline to a batch of data, differing from online mode where a model is deployed as a web service handling real-time requests. Batch deployment is useful for analytical purposes such as evaluating deviations between actual and predicted values over a dataset. The example use case is not an ideal one: we will predict taxi ride durations and analyze the difference between actual and predicted durations to detect patterns like traffic jams. We will turn a [training notebook](./notebooks/course/4.3_web-service-mlflow/random-forest.ipynb) into a [scoring notebook](./notebooks/course/4.5_batch/score.ipynb) that applies the trained model instead of just training it:
+```sh
+jupyter nbconvert --to=script score.ipynb
+```
 
 Since the dataset lacks a natural unique ride ID, universally unique identifiers (UUIDs) are generated for each row to uniquely identify rides. This is done in Python using the built-in `uuid` library, specifically with `uuid4`. These UUIDs are added as a new column to the DataFrame, allowing predictions to be linked back to individual rides.
 
-#### Parameterizing Input and Output
-
-- The script is parameterized to accept input and output file paths, allowing flexible specification of data sources and destinations. Input files can be URLs, enabling direct download and reading by pandas without manual download steps   .
-- Further parameters include year, month, and taxi type, enabling the script to dynamically construct file paths based on these inputs using formatted strings (f-strings) with zero-padding for months   .
-- Output directories are organized by taxi type and time period, enhancing file management for batch results  .
-
 #### Refactoring into Functions
 
-- Code is organized into functions such as `generate_uuids` for UUID creation and `apply_model` for the main scoring logic, which takes parameters like input file, model version, and output file path    .
-- Model versioning is included by passing the MLflow run ID (or model version) to the scoring function, and this version is stored with each prediction to track which model produced the results   .
-- The code avoids global variables, encapsulating logic within functions and enabling easier testing and maintenance  .
+- We organized the code into functions such as `generate_uuids` for UUID creation and `apply_model` for the main scoring logic, which takes parameters like input file, model version, and output file path.
+- Model versioning is included by passing the MLflow run ID (or model version) to the scoring function, and this version is stored with each prediction to track which model produced the results.
+- The code avoids global variables, encapsulating logic within functions and enabling easier testing and maintenance.
 
-#### Testing and Running the Script
+#### Parameterizing Input and Output
 
-- The script can be executed multiple times with different parameters (e.g., for different months) to generate batch predictions for various data slices  .
-- To avoid manual interaction with notebooks, the notebook is converted into a standalone Python script using `jupyter nbconvert --to script`   .
-- The script is further enhanced by adding a `run` function and using the `if __name__ == "__main__":` guard to allow command-line execution with parameters for taxi type, year, and month   .
-- Command-line parameters are accessed via `sys.argv` for simplicity, though more robust options like `argparse` or `click` are recommended for production use     .
-- Basic logging via print statements is added to track progress through reading data, loading the model, applying the model, and saving results, improving usability and debugging   .
+The script is parameterized to accept input and output file paths, allowing flexible specification of data sources and destinations. Input files can be URLs, enabling direct download and reading by pandas without manual download steps. Further parameters include year, month, and taxi type, enabling the script to dynamically construct file paths based on these inputs using formatted strings (f-strings) with zero-padding for months. Output directories are organized by taxi type and time period, enhancing file management for batch results.
+
 
 #### Dependencies and Packaging
-
-- Required Python libraries include `pandas`, `pyarrow` or `fastparquet` for Parquet file handling, `mlflow` for model management, `scikit-learn` for model prediction, `boto3` for S3 access, and `uuid` (built-in)   .
-- The script can be packaged in a Docker container with all dependencies specified to ensure reproducibility and ease of deployment across environments  .
+- The script can be packaged in a Docker container with all dependencies specified to ensure reproducibility and ease of deployment across environments. Required Python libraries include `pandas`, `pyarrow` or `fastparquet` for Parquet file handling, `mlflow` for model management, `scikit-learn` for model prediction, `boto3` for S3 access, and `uuid` (built-in).    
 - For full batch deployment, the script can be scheduled and run on cloud services such as AWS Batch, ECS, or Kubernetes jobs, enabling automated, scalable batch scoring pipelines  .
 
----
 
 > **💡 Key Insight:** Batch deployment scripts should be self-contained, parameterized, and organized into functions to facilitate automation, reproducibility, and scalability in MLOps workflows.
    
