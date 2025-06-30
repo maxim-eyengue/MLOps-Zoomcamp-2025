@@ -5,8 +5,49 @@
 
 ---
 
-## 📌 5.1 Intro to ML monitoring    
+## 📌 5.1 Introduction to ML monitoring    
+Monitoring machine learning models in production is crucial because model quality typically degrades over time, requiring ongoing performance assessment and issue detection. Traditional service health metrics (e.g., uptime, memory usage, latency) must be complemented with ML-specific metrics related to data and model behavior to ensure comprehensive monitoring. Key monitoring areas include service health, model performance, data quality and integrity, and detection of data and concept drift.
 
+#### Core Groups of Monitoring Metrics
+- **Service Health Metrics:** Ensure the underlying service is operational; this is a fundamental prerequisite for any ML service   .
+- **Model Performance Metrics:** Depend on the problem type:
+  - Ranking problems use ranking metrics.
+  - Regression problems use metrics like Mean Absolute Error (MAE) or Mean Absolute Percentage Error (MAPE).
+  - Classification problems use metrics such as log loss, precision, and recall   .
+- **Data Quality and Integrity Metrics:** Include missing value counts, value range checks, and type consistency to catch input data issues early   .
+- **Data Drift and Concept Drift Metrics:** Compare distributions of current input data, model outputs, and target variables against reference datasets to detect shifts that could signal performance degradation   .
+
+#### Additional Monitoring Considerations
+- Metrics can be segmented by categories or groups to detect quality variation across subpopulations, important for diverse datasets or sensitive domains like healthcare or finance  .
+- Monitoring for model bias and fairness is critical in sensitive areas to ensure equitable performance  .
+- Outlier detection can be used when individual errors are costly, enabling manual review to reduce risks  .
+- For recommender systems, tracking user trust and explanation consistency is important especially when models are frequently retrained and updated automatically  .
+
+#### Architecture and Implementation of Monitoring
+- Existing production monitoring infrastructure (e.g., Prometheus and Grafana) can be leveraged to include ML model metrics, facilitating integration and visualization   .
+- Batch models are typically easier to monitor using batch metrics such as drift detection and performance metrics calculated on grouped data sets    .
+- Online (non-batch) models may require a hybrid approach: real-time calculation of simple metrics (e.g., missing values) and batch aggregation/windowing for complex metrics like data drift and model performance    .
+
+#### Proposed Monitoring Pipeline Architecture
+| Step                      | Description                                                                                  |
+|---------------------------|----------------------------------------------------------------------------------------------|
+| 1. Prediction Logging     | Collect prediction logs from batch or online services as the primary data source             |
+| 2. Batch Processing       | Use batch pipelines to read logs, calculate ML and data-related metrics, and store results   |
+| 3. Metrics Storage        | Store calculated metrics in a database (e.g., PostgreSQL)                                   |
+| 4. Visualization & Alerts | Use dashboard tools (e.g., Grafana) to visualize metrics and set alerts                      |
+
+- This architecture supports both batch and online models and builds monitoring on top of prediction logs    .
+
+#### Tools and Technologies for Monitoring
+- Prefect: Orchestrates batch jobs for metric calculation and data processing  .
+- Evidently AI Library: Provides ready-to-use functions for metric calculation and distribution comparison, simplifying implementation  .
+- PostgreSQL: Stores aggregated metrics for querying and visualization  .
+- Grafana: Visualizes metrics with customizable dashboards and alerting capabilities   .
+
+> **💡 Key Insight:** Monitoring ML models requires combining traditional service health checks with specialized metrics addressing data quality, model performance, and data distribution shifts to detect and mitigate degradation effectively.  
+> The integration of batch and online monitoring techniques enables comprehensive coverage regardless of deployment style.  
+> Leveraging existing production monitoring tools and open-source libraries simplifies the implementation and maintenance of ML monitoring systems.  
+                      
 ## 🛠️ 5.2 Environment setup    
 
 ## 📉 5.3 Prepare reference and model
