@@ -94,10 +94,14 @@ We start the entire multi-container application with the command `docker compose
 
 > **💡 Key Insight:** Using Docker Compose with volumes and custom networks allows for modular, persistent, and secure multi-service applications, enabling easy management and interaction through web interfaces like Grafana and Adminer.  
            
-
+To stop running the containers, we can use Ctrl+C and then `docker-compose down`.
 
 
 ## 📉 5.3 Prepare reference and model
+To calculate data drift, we need to get a **reference dataset.** Our focus is now on creating all the artifacts (data and models) we need for building a **grafana dashboard**. For this purpose, we will use a [notebook](./notebooks/course/baseline_model_nyc_taxi_data.ipynb).
+
+> **💡 Key Insight:** Using the validation data as reference data allows comparison between current production data and the "known good" data, facilitating detection of data drift and ensuring model reliability over time.
+ 
 
 ## 🖥️ 5.4 Evidently metrics calculation   
 
