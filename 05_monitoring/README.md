@@ -104,11 +104,81 @@ To calculate data drift, we need to get a **reference dataset.** Our focus is no
  
 
 ## 🖥️ 5.4 Evidently metrics calculation   
+With help of Evidently reports, we can compute many different metrics related to ML pipelines. We will quickly build Evidently report toget metrics that can be used for our dashboard for monitoring. For that we will use the previous [notebook](./notebooks/course/baseline_model_nyc_taxi_data.ipynb).
+
+A **report object** in Evidently groups multiple metrics to calculate. You specify which metrics to include when creating this report, allowing flexible metric selection. Commonly included metrics are **prediction drift**, **dataset drift**, and **missing values**. Prediction drift is important for analyzing data quality and stability, typically calculated on the prediction column. Dataset drift checks for distribution changes across features between reference and current datasets, and missing values metrics reveal data completeness issues.
+
+The HTML report shows the metrics specified, such as prediction drift and dataset drift. If drift is not detected, it suggests the training and validation splits were successful and stable. Missing values are also reported, highlighting potential data quality issues but not necessarily indicating drift.
+
+For automated pipelines or monitoring, working with the report in **dictionary format** is preferable over HTML. This allows programmatic access to specific metric values for decision-making. Using `report.dict()` converts the report into a Python dictionary, enabling extraction of individual metrics like prediction drift score, number of drifted columns, and share of missing values.
+
+
+> **💡 Key Insight:** Storing metrics as a list rather than a dictionary with named keys allows Evidently to flexibly handle multiple metrics of the same type with different parameters, which is crucial for complex monitoring scenarios.
+  
+
+> **ℹ️ Note:** The HTML report format is excellent for exploratory analysis and quick visualization, while the dictionary format is essential for automation and integration into monitoring pipelines.
+  
+
 
 ## 🧰 5.5 Evidently Monitoring Dashboard   
+#### Overview of Evidently Monitoring Dashboards for Batch Models
+- Evidently monitoring dashboards enable quick setup of data and model monitoring, particularly useful for batch models without existing monitoring infrastructure. The core approach is to calculate reports regularly and store them for visualization and analysis  .
+- The process involves creating a workspace (typically a directory in the local file system) and a project within that workspace to organize reports and dashboards   .
+- Projects can be named and described to facilitate understanding and management of monitoring efforts   .
+
+#### Creating and Adding Reports
+- Reports summarize dataset quality and model metrics, including configuration details (e.g., target column, prediction column), summary statistics per column, missing values, and correlations. These reports form the basis for monitoring   .
+- Reports should be generated regularly with a specific datetime to associate dashboard plots with particular dates, enabling time series analysis   .
+- After generating a report, it is added to the project workspace for persistent storage and later visualization  .
+
+#### Running Evidently UI and Viewing Reports
+- Evidently UI can be launched from the terminal with default options to serve the monitoring dashboard locally. It displays a list of projects and their reports, allowing users to browse and view detailed reports similar to those seen in notebooks    .
+- Reports can be tagged with text or metadata to facilitate searching and identification within the dashboard interface  .
+
+#### Configuring Dashboards and Panels
+- Dashboards are added and managed within projects, and panels are the building blocks of dashboards. Panels display counters, plots, or other metrics derived from the reports   .
+- Types of panels include:
+  - **Dashboard Panel Counter:** Displays simple counts or aggregated metrics without filters or aggregation.
+  - **Dashboard Panel Plot:** Visualizes metrics over time or categories using plot types like line, bar, or scatter   .
+- Example panel configurations include inference counts and missing value statistics using dataset summary metrics, with adjustable plot types and panel sizes for better visualization    .
+- It is important to save the dashboard configuration after adding or modifying panels to preserve changes  .
+
+#### Enhancing Dashboard Usefulness with Multiple Data Points
+- Adding multiple reports with different datetime values enables trend analysis and a more informative dashboard by showing changes over time   .
+- Regularly scheduled generation and addition of evidently reports (e.g., daily, weekly) automate the monitoring process and support ongoing data and model quality checks   .
+
+> **💡 Key Insight:** Evidently dashboards provide an accessible, fast way to start monitoring batch models and data quality without existing infrastructure, by leveraging regularly generated reports and flexible dashboard panels for visualization and tracking over time.
+  
 
 ## 🧭 5.6 Dummy monitoring
+#### Database Preparation and Connection Setup
+- The script first checks if the test database exists by querying the PostgreSQL system database; if it doesn't exist, it creates the test database. This ensures the environment is ready for data insertion   .
+- Connection to the PostgreSQL server is established using the `psycopg` library with parameters such as host, port, user, and password, which should be verified against Docker Compose configuration for correctness  .
+- After confirming or creating the database, the script creates a table named `dummy_matrix` with a schema including a timestamp and three value columns (`value1`, `value2`, `value3`) of different data types (integer, string, float) to allow varied data types for experiments   .
+- The table is dropped and recreated each time the script runs to maintain a clean state, facilitating repeated tests without data conflicts  .
 
+#### Data Calculation and Insertion Logic
+- A function calculates random dummy data for insertion, generating a random integer, a UUID string, and a random float for the three value columns respectively, simulating diverse metric types   .
+- Data insertion uses a SQL `INSERT` statement executed through a cursor connected to the `dummy_matrix` table, storing the current timestamp (using the Europe/London timezone) along with the generated dummy values as strings  .
+- The main function orchestrates the workflow: preparing the database, then iterating 100 times to calculate and insert dummy data rows, simulating batch data generation and ingestion   .
+
+#### Timing Control for Simulated Batch Processing
+- To simulate real production batch behavior that outputs data every 10 seconds, the script calculates elapsed time since the last data send and enforces a wait if needed to maintain consistent time intervals between inserts  .
+- This delay mechanism uses the difference between the current time and the last send timestamp compared to the desired timeout, ensuring realistic pacing for monitoring and visualization purposes  .
+
+#### Testing and Verification
+- The script is run after activating services with Docker Compose, optionally rebuilding containers to ensure the latest version is used; successful execution confirms data is sent to the database as expected   .
+- Verification includes logging into the PostgreSQL database via a client, checking the `dummy_matrix` table schema, and querying the inserted data to confirm the presence and correctness of timestamped dummy metrics  .
+
+#### Visualization with Grafana
+- Grafana is configured to connect to the PostgreSQL data source, allowing creation of dashboards that query and display the dummy metrics stored in the database  .
+- Users can create panels in Grafana selecting specific columns (e.g., `value1`) to plot data over selectable time intervals (e.g., last 5 minutes), facilitating real-time visualization and monitoring of dummy data trends   .
+- Grafana dashboards can be customized by adding multiple panels (e.g., for `value3`), renaming them, changing panel colors, and rearranging layouts to improve clarity and presentation of monitoring data   .
+
+---
+
+> **ℹ️ Note:** The approach of generating dummy monitoring data with controlled timing and visualization helps simulate production-like batch data flows, enabling testing of monitoring pipelines without relying on real system metrics.  
+    
 ## 🖥️ 5.7 Data quality monitoring
 
 ## 📉 5.8 Save Grafana Dashboard
