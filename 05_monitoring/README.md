@@ -121,31 +121,28 @@ For automated pipelines or monitoring, working with the report in **dictionary f
 
 
 ## 🧰 5.5 Evidently Monitoring Dashboard   
-#### Overview of Evidently Monitoring Dashboards for Batch Models
-- Evidently monitoring dashboards enable quick setup of data and model monitoring, particularly useful for batch models without existing monitoring infrastructure. The core approach is to calculate reports regularly and store them for visualization and analysis  .
-- The process involves creating a workspace (typically a directory in the local file system) and a project within that workspace to organize reports and dashboards   .
-- Projects can be named and described to facilitate understanding and management of monitoring efforts   .
+Evidently monitoring dashboards enable quick setup of data and model monitoring, particularly useful for batch models without existing monitoring infrastructure. The core approach is to calculate reports regularly and store them for visualization and analysis. We will use a [notebook](./notebooks/course/baseline_model_nyc_taxi_data.ipynb) for doing that.
 
 #### Creating and Adding Reports
-- Reports summarize dataset quality and model metrics, including configuration details (e.g., target column, prediction column), summary statistics per column, missing values, and correlations. These reports form the basis for monitoring   .
-- Reports should be generated regularly with a specific datetime to associate dashboard plots with particular dates, enabling time series analysis   .
-- After generating a report, it is added to the project workspace for persistent storage and later visualization  .
+Reports summarize dataset quality and model metrics, including configuration details (e.g., target column, prediction column), summary statistics per column, missing values, and correlations. These reports form the basis for monitoring. They should be generated regularly with a specific datetime to associate dashboard plots with particular dates, enabling time series analysis. After generating a report, we can add it to the project workspace for persistent storage and later visualization.
 
 #### Running Evidently UI and Viewing Reports
-- Evidently UI can be launched from the terminal with default options to serve the monitoring dashboard locally. It displays a list of projects and their reports, allowing users to browse and view detailed reports similar to those seen in notebooks    .
-- Reports can be tagged with text or metadata to facilitate searching and identification within the dashboard interface  .
+Evidently UI can be launched from the terminal with default options to serve the monitoring dashboard locally:
+```sh
+evidently ui
+```
+It displays a list of projects and their reports, allowing users to browse and view detailed reports similar to those seen in notebooks. Reports can be tagged with text or metadata to facilitate searching and identification within the dashboard interface.
 
 #### Configuring Dashboards and Panels
-- Dashboards are added and managed within projects, and panels are the building blocks of dashboards. Panels display counters, plots, or other metrics derived from the reports   .
-- Types of panels include:
-  - **Dashboard Panel Counter:** Displays simple counts or aggregated metrics without filters or aggregation.
-  - **Dashboard Panel Plot:** Visualizes metrics over time or categories using plot types like line, bar, or scatter   .
-- Example panel configurations include inference counts and missing value statistics using dataset summary metrics, with adjustable plot types and panel sizes for better visualization    .
-- It is important to save the dashboard configuration after adding or modifying panels to preserve changes  .
+Dashboards can be added and managed within projects, and panels are their building blocks. They display counters, plots, or other metrics derived from the reports. Types of panels include:
+- **Dashboard Panel Counter:** Displays simple counts or aggregated metrics without filters or aggregation.
+- **Dashboard Panel Plot:** Visualizes metrics over time or categories using plot types like line, bar, or scatter.
+
+> Note that it is important to save the dashboard configuration after adding or modifying panels to preserve changes.
 
 #### Enhancing Dashboard Usefulness with Multiple Data Points
-- Adding multiple reports with different datetime values enables trend analysis and a more informative dashboard by showing changes over time   .
-- Regularly scheduled generation and addition of evidently reports (e.g., daily, weekly) automate the monitoring process and support ongoing data and model quality checks   .
+- Adding multiple reports with different datetime values enables trend analysis and a more informative dashboard by showing changes over time.
+- Regularly scheduled generation and addition of evidently reports (e.g., daily, weekly) automate the monitoring process and support ongoing data and model quality checks.
 
 > **💡 Key Insight:** Evidently dashboards provide an accessible, fast way to start monitoring batch models and data quality without existing infrastructure, by leveraging regularly generated reports and flexible dashboard panels for visualization and tracking over time.
   
