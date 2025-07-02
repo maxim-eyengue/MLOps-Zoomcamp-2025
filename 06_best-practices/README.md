@@ -1,6 +1,6 @@
 ![MLOps Zoomcamp](../images/banner-2025.jpg)
 
-# 🚀 MLOps Zoomcamp – Module 6: Model Monitoring
+# 🚀 MLOps Zoomcamp – Module 6: Best Practices
 **Instructors:** Alexey Grigorev
 
 ---
