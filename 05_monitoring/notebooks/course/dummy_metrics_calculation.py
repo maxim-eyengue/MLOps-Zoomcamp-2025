@@ -7,7 +7,7 @@ import uuid
 import pytz # for time zone
 import psycopg # for postgres dataabases
 
-# Specify how to lod the database
+# Specify how to load the database
 logging.basicConfig(level = logging.INFO, format = "%(asctime)s [%(levelname)s]: %(message)s")
 
 # Global variables
@@ -29,7 +29,7 @@ create table dummy_metrics(
 def prep_db():
 	# Open a connection to the database
 	with psycopg.connect("host=localhost port=5432 user=postgres password=example", autocommit = True) as conn:
-		# Execute an SQL query
+		# Execute a SQL query
 		res = conn.execute("SELECT 1 FROM pg_database WHERE datname='test'")
 		# If no database
 		if len(res.fetchall()) == 0:
@@ -53,7 +53,7 @@ def calculate_dummy_metrics_postgresql(curr): # curr: position of the cursor whe
 # Main function
 def main():
 	prep_db() # prepare the database
-	# Calculate last time the daata was sent
+	# Calculate last time the data was sent
 	last_send = datetime.datetime.now() - datetime.timedelta(seconds = 10)
 	# connection to the database
 	with psycopg.connect("host=localhost port=5432 dbname=test user=postgres password=example", autocommit=True) as conn:
