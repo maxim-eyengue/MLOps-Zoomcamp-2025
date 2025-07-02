@@ -158,7 +158,28 @@ Connecting to [Adminer](http://127.0.0.1:8080) helps to manage our Postgres data
 
 > **ℹ️ Note:** The approach of generating dummy monitoring data with controlled timing and visualization helps simulate production-like batch data flows, enabling testing of monitoring pipelines without relying on real system metrics.  
     
+
 ## 🖥️ 5.7 Data quality monitoring
+We can alterate our dummy script to build a new [script](./notebooks/course/evidently_metrics_calculation.py) adding `evidently` monitoring for the Taxi data and also `prefect` orchestration.
+To load the data, we need to make sure that both prefect (`prefect start`) and our container are running. 
+- For prefect: 
+```sh
+# Start the server
+prefect server start
+# Configure it in another terminal window
+prefect config set PREFECT_API_URL=http://127.0.0.1:4200/api
+```
+- For our containers: if they were not shut down with `docker-compose down` run:
+```sh
+docker-compose up --build -d 
+```
+- Once done, we can run the data quality monitoring script:
+```sh
+python evidently_metrics_calculation.py
+```
+Note we can visualize tasks running via [Prefect UI](http://127.0.0.1:4200). We can also check [Adminer](http://127.0.0.1:8080) to see the updates made on the database and [Grafana](http://127.0.0.1:3000) to visualize the metriv=cs data.
+
+**Note:** When viewing historical data in Grafana, the time period setting for the panel or dashboard may need to be adjusted (e.g., to the last five years) to correctly display data points based on their original timestamps.
 
 ## 📉 5.8 Save Grafana Dashboard
 
