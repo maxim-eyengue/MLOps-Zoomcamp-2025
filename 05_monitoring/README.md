@@ -182,8 +182,35 @@ Note we can visualize tasks running via [Prefect UI](http://127.0.0.1:4200). We 
 **Note:** When viewing historical data in Grafana, the time period setting for the panel or dashboard may need to be adjusted (e.g., to the last five years) to correctly display data points based on their original timestamps.
 
 ## 📉 5.8 Save Grafana Dashboard
+To save a Grafana dashboard for reuse, you need to create configuration files in your text editor. This involves creating a main config file for Grafana dashboards, importing the dashboard configuration from Grafana itself, and then reloading the Grafana service to see the saved dashboard:     
+- First, create a config file named `grafana_dashboards` inside the `config` directory.   
+- This standard configuration file specifies details like the dashboard name and the path to the dashboard configuration files.   
+- Create a directory, for instance, named `dashboards`, to store the dashboard config files: `mkdir dashboards`
+- Inside the `dashboards` directory, create a JSON file for the specific dashboard, using the `.json` format (e.g., `datadrift.json`), as Grafana uses JSON to store dashboard and panel configurations.    
+
+We also need to alter the [Docker Compose file](./notebooks/course/docker-compose.yml) to include the new configurations for dashboards in case they were not already ther. In the `volumes` section of the Grafana service configuration in Docker Compose, we should add mappings for the dashboard configurations and the specific dashboard JSON file. This lets Grafana know where to find the dashboard configurations. After saving the Docker Compose configuration, we will populate the [dashboard's JSON file](./notebooks/course/dashboards/data_drift.json) (e.g., `datadrift.json`). To get the content for this file, we can go to the dashboard settings in Grafana, access the JSON model, and copy the dashboard's configuration.   
+  
+We can now verify that the dashboard was saved properly:
+- After stopping:
+```sh
+docker-compose down
+```
+- and running the Docker containers again:
+```sh
+docker-compose up --build -d
+```
+- and adding the data:
+```sh
+python evidently_metrics_calculation.py
+```
+
+we should be able to access the same dashboard without recreating the panels. It should be available directly from the list of dashboards in Grafana. Saving dashboards this way allows you to reuse them easily.
+
+> Note Prefect should be running to add the data in the database.
 
 ## 🧰 5.9 Debugging with test suites and reports
+
+
 
 ## 📝 5.10 Homework
 Homework for this module is available [here.](notebooks/homework/homework_05.ipynb).
