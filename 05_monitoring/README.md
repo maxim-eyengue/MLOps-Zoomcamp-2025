@@ -148,31 +148,13 @@ Dashboards can be added and managed within projects, and panels are their buildi
   
 
 ## 🧭 5.6 Dummy monitoring
-#### Database Preparation and Connection Setup
-- The script first checks if the test database exists by querying the PostgreSQL system database; if it doesn't exist, it creates the test database. This ensures the environment is ready for data insertion   .
-- Connection to the PostgreSQL server is established using the `psycopg` library with parameters such as host, port, user, and password, which should be verified against Docker Compose configuration for correctness  .
-- After confirming or creating the database, the script creates a table named `dummy_matrix` with a schema including a timestamp and three value columns (`value1`, `value2`, `value3`) of different data types (integer, string, float) to allow varied data types for experiments   .
-- The table is dropped and recreated each time the script runs to maintain a clean state, facilitating repeated tests without data conflicts  .
-
-#### Data Calculation and Insertion Logic
-- A function calculates random dummy data for insertion, generating a random integer, a UUID string, and a random float for the three value columns respectively, simulating diverse metric types   .
-- Data insertion uses a SQL `INSERT` statement executed through a cursor connected to the `dummy_matrix` table, storing the current timestamp (using the Europe/London timezone) along with the generated dummy values as strings  .
-- The main function orchestrates the workflow: preparing the database, then iterating 100 times to calculate and insert dummy data rows, simulating batch data generation and ingestion   .
-
-#### Timing Control for Simulated Batch Processing
-- To simulate real production batch behavior that outputs data every 10 seconds, the script calculates elapsed time since the last data send and enforces a wait if needed to maintain consistent time intervals between inserts  .
-- This delay mechanism uses the difference between the current time and the last send timestamp compared to the desired timeout, ensuring realistic pacing for monitoring and visualization purposes  .
-
-#### Testing and Verification
-- The script is run after activating services with Docker Compose, optionally rebuilding containers to ensure the latest version is used; successful execution confirms data is sent to the database as expected   .
-- Verification includes logging into the PostgreSQL database via a client, checking the `dummy_matrix` table schema, and querying the inserted data to confirm the presence and correctness of timestamped dummy metrics  .
-
-#### Visualization with Grafana
-- Grafana is configured to connect to the PostgreSQL data source, allowing creation of dashboards that query and display the dummy metrics stored in the database  .
-- Users can create panels in Grafana selecting specific columns (e.g., `value1`) to plot data over selectable time intervals (e.g., last 5 minutes), facilitating real-time visualization and monitoring of dummy data trends   .
-- Grafana dashboards can be customized by adding multiple panels (e.g., for `value3`), renaming them, changing panel colors, and rearranging layouts to improve clarity and presentation of monitoring data   .
-
----
+We will create a [script](./notebooks/course/dummy_metrics_calculation.py) to calculate some dummy metrics and load them into our database. We want to create a database, create a test table and add metrics row by row to that table. After writing the script, we can activate services with Docker Compose:
+```sh
+docker-compose up --build -d
+```
+`-d` helps to run in detached mode so to get the access back to the terminal after the execution of the command.   
+We can now execute the script: `python dummy_metrics_calculation.py`.
+Connecting to [Adminer](http://127.0.0.1:8080) helps to manage our Postgres database and verify that the data is sent. We can also log into [Grafana](http://127.0.0.1:3000) to create dashboards and visualize the data.
 
 > **ℹ️ Note:** The approach of generating dummy monitoring data with controlled timing and visualization helps simulate production-like batch data flows, enabling testing of monitoring pipelines without relying on real system metrics.  
     
