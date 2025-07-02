@@ -209,10 +209,9 @@ we should be able to access the same dashboard without recreating the panels. It
 > Note Prefect should be running to add the data in the database.
 
 ## 🧰 5.9 Debugging with test suites and reports
-
-
+We implement monitoring to detect issues like data or model drift, allowing for intervention and debugging. Evidently library assists in debugging by creating visual dashboards and checking metrics against thresholds. We will use a [notebook](./notebooks/course/debugging_nyc_taxi_data.ipynb) for debugging purposes.
 
 ## 📝 5.10 Homework
 Homework for this module is available [here.](notebooks/homework/homework_05.ipynb).
 
----
+---   
