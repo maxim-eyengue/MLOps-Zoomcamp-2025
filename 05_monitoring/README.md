@@ -1,6 +1,6 @@
 ![MLOps Zoomcamp](../images/banner-2025.jpg)
 
-# 🚀 MLOps Zoomcamp – Week 5: Model Monitoring
+# 🚀 MLOps Zoomcamp – Module 5: Model Monitoring
 **Instructors:** Emeli Dral, Alexey Grigorev
 
 ---

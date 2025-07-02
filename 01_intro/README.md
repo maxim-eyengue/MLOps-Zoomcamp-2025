@@ -1,6 +1,6 @@
 ![MLOps Zoomcamp](../images/banner-2025.jpg)
 
-# 🚀 MLOps Zoomcamp – Week 1: Introduction
+# 🚀 MLOps Zoomcamp – Module 1: Introduction
 
 **Instructor:** Alexey Grigorev
 

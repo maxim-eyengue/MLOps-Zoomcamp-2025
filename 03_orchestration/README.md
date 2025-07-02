@@ -1,6 +1,6 @@
 ![MLOps Zoomcamp](../images/banner-2025.jpg)
 
-# 🚀 MLOps Zoomcamp – Week 3: Orchestration & ML Pipelines
+# 🚀 MLOps Zoomcamp – Module 3: Orchestration & ML Pipelines
 
 **Instructors:** Alexey Grigorev, Jeff Hale, Bianca Hoch
 

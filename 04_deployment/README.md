@@ -1,6 +1,6 @@
 ![MLOps Zoomcamp](../images/banner-2025.jpg)
 
-# 🚀 MLOps Zoomcamp – Week 4: Model Deployment
+# 🚀 MLOps Zoomcamp – Module 4: Model Deployment
 **Instructor:** Alexey Grigorev
 
 ---

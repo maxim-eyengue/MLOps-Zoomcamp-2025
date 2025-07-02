@@ -1,6 +1,6 @@
 ![MLOps Zoomcamp](../images/banner-2025.jpg)
 
-# 🚀 MLOps Zoomcamp – Week 2: Experiment tracking and model management
+# 🚀 MLOps Zoomcamp – Module 2: Experiment tracking and model management
 
 **Instructor:** Cristian Martinez
 
