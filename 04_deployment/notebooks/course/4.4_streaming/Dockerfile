@@ -4,7 +4,7 @@ RUN pip install -U pip
 RUN pip install pipenv 
 
 COPY [ "Pipfile", "Pipfile.lock", "./" ]
-COPY [ "mlflow-models", "./" ]
+COPY mlflow-models/ mlflow-models/
 
 RUN pipenv install --system --deploy
 
