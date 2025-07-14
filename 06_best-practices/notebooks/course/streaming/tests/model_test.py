@@ -64,18 +64,18 @@ class ModelMock:
 
 def test_predict():
     "Test the model predict method."
-    model_mock = ModelMock(10.0)
-    model_service = model.ModelService(model_mock)
+    model_mock = ModelMock(10.0) # declaring a mock model
+    model_service = model.ModelService(model_mock) # passing it for model serving
 
     features = {
         "PU_DO": "130_205",
         "trip_distance": 3.66,
     }
 
-    actual_prediction = model_service.predict(features)
+    actual_prediction = model_service.predict(features) # get the mock prediction
     expected_prediction = 10.0
 
-    assert actual_prediction == expected_prediction
+    assert actual_prediction == expected_prediction # check the match
 
 
 def test_lambda_handler():

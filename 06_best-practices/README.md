@@ -24,7 +24,7 @@ This architecture included an events stream, a Lambda function processing events
 
 #### Setting up the Testing Environment
 For that we will:
-- Set our `pipenv` environment using [Pipfile](./notebooks/course/streaming/Pipfile): `pipenv install`.
+- Set our `pipenv` environment using [Pipfile](./notebooks/course/streaming/Pipfile): `pipenv install --python=3.9`.
 > Note that for deleting the Pipenv environment, you should first delete the environment: `pipenv --rm` and then remove Pipfile files: `rm Pipfile*`.
 - Create a `tests` folder to store test files: `mkdir tests`.
 - Add a `__init__.py` file in the `tests` folder to let **python** know that it is a **Python package** and a [test file](./tests/model_test.py) for testing.
@@ -37,9 +37,12 @@ For that we will:
     - A basic test like `assert 1 == 1` can be used to confirm pytest setup is working.         
 
 #### Refactoring Code for Testability
-Initially, attempting to import the original [`lambda_function.py`](../../../../04_deployment/notebooks/course/4.4_streaming/lambda_function.py) directly for testing fails because global variables (like the model loading logic) are executed upon import. In fact, the logic that requires external resources (like S3) is at the top level, making simple unit testing difficult. Hence the need to perform some refactoring. We will simplfy the original [lambda function](./lambda_function.py) so that it imports the [model from another script](./model.py). This way, we will define a model class for that script and will be able to perform [unit tests](./tests/model_test.py) for the methods of that model. This refactoring allows unit tests to import the `model.py` file without triggering the problematic global logic. Note that to handle external dependencies (put predictions into a Kinesis stream), we will create a callback mechanism. With the code refactory completed, Pytest works well. There are green checks to confirm that in the testing panel.
+Initially, attempting to import the original [`lambda_function.py`](../../../../04_deployment/notebooks/course/4.4_streaming/lambda_function.py) directly for testing fails because global variables (like the model loading logic) are executed upon import. In fact, the logic that requires external resources (like S3) is at the top level, making simple unit testing difficult. Hence the need to perform some refactoring. We will simplfy the original [lambda function](./lambda_function.py) so that it imports the [model from another script](./model.py). This way, we will define a model class for that script and will be able to perform [unit tests](./tests/model_test.py) for the methods of that model. This refactoring allows unit tests to import the `model.py` file without triggering the problematic global logic. Note that to handle external dependencies (put predictions into a Kinesis stream), we will create a **callback mechanism**. With the code refactory completed, Pytest works well. There are green checks to confirm that in the testing panel.
+
+> Tests can also be run through the command line interface: `pipenv run pytest tests`.
 
 We can now update our [Dockerfile](./Dockerfile) and build the model image:
+
 ```bash
 docker build -t stream-model-duration:v2 .
 ```
@@ -55,6 +58,12 @@ docker run -it --rm \
     -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
     stream-model-duration:v2
 ```
+> Note that we need to pass credentials using the command line interface, before running the image:
+```sh
+AWS_ACCESS_KEY_ID="ID_123"
+AWS_SECRET_ACCESS_KEY="Key_123"
+```
+To test our docker image, we can run a [test script](./notebooks/course/streaming/test_docker.py): `python test_docker.py`.
 
 #### Unit Tests vs. Integration Tests
 - **Unit tests** focus on testing small, isolated pieces of code (functions, methods). They are independent and fast.   
@@ -66,7 +75,7 @@ docker run -it --rm \
 | **Integration Tests**| Multiple components working together | Real or simulated external | Slower| Verify system parts integrate correctly |
 
 
-## 🛠️ 6.2 
+## 🛠️ 6.2 Integration tests with docker-compose
 
 
 
