@@ -85,7 +85,7 @@ It can even be configured with a `significant_digits` tolerance for float compar
 #### Managing Test Dependencies
 Integration tests should ideally limit external dependencies to ensure reliability and offline execution. For this reason and also to avoid using S3 buckets, we earlier decided earlier to copy the [MLFlow artifact fodler](./notebooks/course/streaming/mlflow-models/) to the docker image instead of connecting to an s3 bucket. To facilitate local model loading in Docker, one can decide to download the model files from S3 to a local `model` folder within the `integration_test` directory:
 ```sh
-aws s3 cp recursive MODEL_REMOTE_LOCATION model
+aws s3 cp --recursive MODEL_REMOTE_LOCATION model
 ```
 with `MODEL_REMOTE_LOCATION=s3://{model_bucket}/{experiment_id}/{run_id}/artifacts/model` the remote address of the model.
 Once done, we can **mount** this local `model` folder into the Docker container using the `-v` flag (`-v ./model:/app/model`), and setting the `MODEL_LOCATION` environment variable to the container's path (`/app/model`).
