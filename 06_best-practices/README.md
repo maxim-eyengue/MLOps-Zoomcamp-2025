@@ -51,7 +51,7 @@ then run it:
 docker run -it --rm \
     -p 8080:8080 \
     -e PREDICTIONS_STREAM_NAME="ride_predictions" \
-    -e RUN_ID="1ca05c6d23f44066a4a4dcdbe1639de4" \
+    -e MODEL_RUN_ID="1ca05c6d23f44066a4a4dcdbe1639de4" \
     -e TEST_RUN="True" \
     -e AWS_DEFAULT_REGION="us-east-1" \
     -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
@@ -76,8 +76,66 @@ To test our docker image, we can run a [test script](./notebooks/course/streamin
 
 
 ## 🛠️ 6.2 Integration tests with docker-compose
-Previously, the Lambda function code was refactored to delegate core logic to a `model.py` file, making it easier to test individual components. We then implemented unit tests to cover specific functions within the `model.py` file, but their scope was limited to individual functions and did not verify the entire system's functionality or its ability to handle requests and responses.   
+Previously, we refactored the Lambda function code to delegate core logic to a `model.py` file, making it easier to test individual components. We then implemented unit tests to cover specific functions within the `model.py` file, but their scope was limited to individual functions and did not verify the entire system's functionality or its ability to handle requests and responses. For testing the entire system, we initially run a docker image and a [testing script](./notebooks/course/streaming/test_docker.py). We will convert this script into a [**proper integration test**](./notebooks/course/streaming/integration-test/test_docker.py) by adding `assert` statements to compare actual and expected responses. To compare complex dictionary responses and identify specific differences, we will install the `deepdiff` library:
+```sh
+pipenv install deepdiff
+```
+It can even be configured with a `significant_digits` tolerance for float comparisons.  
 
+#### Managing Test Dependencies
+Integration tests should ideally limit external dependencies to ensure reliability and offline execution. For this reason and also to avoid using S3 buckets, we earlier decided earlier to copy the [MLFlow artifact fodler](./notebooks/course/streaming/mlflow-models/) to the docker image instead of connecting to an s3 bucket. To facilitate local model loading in Docker, one can decide to download the model files from S3 to a local `model` folder within the `integration_test` directory:
+```sh
+aws s3 cp recursive MODEL_REMOTE_LOCATION model
+```
+with `MODEL_REMOTE_LOCATION=s3://{model_bucket}/{experiment_id}/{run_id}/artifacts/model` the remote address of the model.
+Once done, we can **mount** this local `model` folder into the Docker container using the `-v` flag (`-v ./model:/app/model`), and setting the `MODEL_LOCATION` environment variable to the container's path (`/app/model`).
+
+From the [integration test folder](./notebooks/course/streaming/integration-test/), we can build the model image:
+
+```bash
+docker build -t stream-model-duration:v2 ..
+```
+and then run it :
+```bash
+docker run -it --rm \
+    -p 8080:8080 \
+    -e PREDICTIONS_STREAM_NAME="ride_predictions" \
+    -e MODEL_RUN_ID="1ca05c6d23f44066a4a4dcdbe1639de4" \
+    -e MODEL_LOCATION="/app/model" \
+    -e TEST_RUN="True" \
+    -e AWS_DEFAULT_REGION="us-east-1" \
+    -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
+    -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
+    -v $(pwd)/model:/app/model \
+    stream-model-duration:v2
+```
+> Note that we need to pass credentials using the command line interface as done [previously](#-61-testing-python-code-with-pytest).
+
+Finally, we can test the image:
+```sh
+pipenv run python test_docker.py
+```
+
+> The **Kinesis callback** functionality can be tested by setting the `test_run` flag is to `False` and running the commamd:
+```sh
+pipenv run python test_kinesis.py
+```
+
+
+#### Automating Integration Tests with Docker Compose
+The entire testing workflow, including building the Docker image, running the service, executing tests, and stopping the service, can be automated using a [shell script](./notebooks/course/streaming/integration-test/run.sh). The script ensures it always runs from its own directory using a specific bash command. Docker image tags are dynamically generated using the current date and time to ensure uniqueness. **Docker Compose**  is used to manage the service's configuration, including image name, exposed ports, environment variables (e.g., `MODEL_LOCATION`), and volume mounts for the local model folder.    
+
+> For the automation to work, we neeed to update the credentials in the [docke-compose configuration file](./notebooks/course/streaming/integration-test/docker-compose.yaml) and also to make the script executable:
+```sh
+chmod +x run.sh
+```
+and run it:
+```sh
+bash run.sh
+```
+
+#### Handling Script Exit Codes for CI/CD
+For Continuous Integration/Continuous Deployment (CI/CD) systems, a script's exit code determines job success (0) or failure (non-zero). Using `set -e` in a bash script forces it to exit immediately upon the first non-zero command, but this can prevent cleanup actions like `docker-compose down`. A more robust approach is to manually capture the test's exit code into a variable and then conditionally print Docker Compose logs and exit with the captured code after ensuring `docker-compose down` is executed. This ensures that if tests fail, the CI/CD job will be marked as failed, and relevant container logs will be available for debugging.   
 
 
 ## 📉 6.3 
