@@ -41,9 +41,9 @@ pprint(actual_record)
 
 expected_record = {
     'model': 'ride_duration_prediction_model',
-    'version': 'Test123', # 1ca05c6d23f44066a4a4dcdbe1639de4
+    'version': '1ca05c6d23f44066a4a4dcdbe1639de4', # Test7 to get an error
     'prediction': {
-        'ride_duration': 21.3, # 18.17
+        'ride_duration': 18.17, # 21.3 to get an error
         'ride_id': 256,
     },
 }

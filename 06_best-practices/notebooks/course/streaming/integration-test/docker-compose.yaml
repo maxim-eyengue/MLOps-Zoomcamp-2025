@@ -5,7 +5,7 @@ services:
       - "8080:8080"
     environment:
       - PREDICTIONS_STREAM_NAME=${PREDICTIONS_STREAM_NAME}
-      - RUN_ID=1ca05c6d23f44066a4a4dcdbe1639de4
+      - MODEL_RUN_ID=1ca05c6d23f44066a4a4dcdbe1639de4
       - AWS_DEFAULT_REGION=us-east-1
       - MODEL_LOCATION=/app/model
       - KINESIS_ENDPOINT_URL=http://kinesis:4566/

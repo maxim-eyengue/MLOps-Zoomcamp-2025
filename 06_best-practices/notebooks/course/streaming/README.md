@@ -10,7 +10,7 @@ docker build -t stream-model-duration:v2 .
 docker run -it --rm \
     -p 8080:8080 \
     -e PREDICTIONS_STREAM_NAME="ride_predictions" \
-    -e RUN_ID="1ca05c6d23f44066a4a4dcdbe1639de4" \
+    -e MODEL_RUN_ID="1ca05c6d23f44066a4a4dcdbe1639de4" \
     -e TEST_RUN="True" \
     -e AWS_DEFAULT_REGION="us-east-1" \
     stream-model-duration:v2
@@ -22,7 +22,7 @@ Mounting the model folder:
 docker run -it --rm \
     -p 8080:8080 \
     -e PREDICTIONS_STREAM_NAME="ride_predictions" \
-    -e RUN_ID="1ca05c6d23f44066a4a4dcdbe1639de4" \
+    -e MODEL_RUN_ID="1ca05c6d23f44066a4a4dcdbe1639de4" \
     -e MODEL_LOCATION="/app/model" \
     -e TEST_RUN="True" \
     -e AWS_DEFAULT_REGION="us-east-1" \
