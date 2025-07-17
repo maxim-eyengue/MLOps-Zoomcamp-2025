@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "999f52e045b54b8aaddd3d58d0f55a044a48043d286616ac928b67dc1034f301"
+            "sha256": "d0dd0b2c1b35db13f8525123de25761fc255ef799a4fa3629889f27cc1145b11"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -281,6 +281,15 @@
             ],
             "markers": "python_version >= '3.7'",
             "version": "==0.58.0"
+        },
+        "deepdiff": {
+            "hashes": [
+                "sha256:a4dd3529fa8d4cd5b9cbb6e3ea9c95997eaa919ba37dac3966c1b8f872dc1cd1",
+                "sha256:d4599db637f36a1c285f5fdfc2cd8d38bde8d8be8636b65ab5e425b67c54df26"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.9'",
+            "version": "==8.5.0"
         },
         "docker": {
             "hashes": [
@@ -822,6 +831,14 @@
             ],
             "markers": "python_version >= '3.9'",
             "version": "==0.56b0"
+        },
+        "orderly-set": {
+            "hashes": [
+                "sha256:46f0b801948e98f427b412fcabb831677194c05c3b699b80de260374baa0b1e7",
+                "sha256:e87185c8e4d8afa64e7f8160ee2c542a475b738bc891dc3f58102e654125e6ce"
+            ],
+            "markers": "python_version >= '3.8'",
+            "version": "==5.5.0"
         },
         "packaging": {
             "hashes": [
