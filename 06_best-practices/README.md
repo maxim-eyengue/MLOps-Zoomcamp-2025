@@ -78,7 +78,7 @@ To test our docker image, we can run a [test script](./notebooks/course/streamin
 ## 🛠️ 6.2 Integration tests with docker-compose
 Previously, we refactored the Lambda function code to delegate core logic to a `model.py` file, making it easier to test individual components. We then implemented unit tests to cover specific functions within the `model.py` file, but their scope was limited to individual functions and did not verify the entire system's functionality or its ability to handle requests and responses. For testing the entire system, we initially run a docker image and a [testing script](./notebooks/course/streaming/test_docker.py). We will convert this script into a [**proper integration test**](./notebooks/course/streaming/integration-test/test_docker.py) by adding `assert` statements to compare actual and expected responses. To compare complex dictionary responses and identify specific differences, we will install the `deepdiff` library:
 ```sh
-pipenv install deepdiff
+pipenv install --dev deepdiff
 ```
 It can even be configured with a `significant_digits` tolerance for float comparisons.  
 
@@ -125,7 +125,7 @@ pipenv run python test_kinesis.py
 #### Automating Integration Tests with Docker Compose
 The entire testing workflow, including building the Docker image, running the service, executing tests, and stopping the service, can be automated using a [shell script](./notebooks/course/streaming/integration-test/run.sh). The script ensures it always runs from its own directory using a specific bash command. Docker image tags are dynamically generated using the current date and time to ensure uniqueness. **Docker Compose**  is used to manage the service's configuration, including image name, exposed ports, environment variables (e.g., `MODEL_LOCATION`), and volume mounts for the local model folder.    
 
-> For the automation to work, we neeed to update the credentials in the [docke-compose configuration file](./notebooks/course/streaming/integration-test/docker-compose.yaml) and also to make the script executable:
+> For the automation to work, we neeed to update the credentials in the [docker-compose configuration file](./notebooks/course/streaming/integration-test/docker-compose.yaml) and also to make the script executable:
 ```sh
 chmod +x run.sh
 ```
