@@ -76,8 +76,7 @@ To test our docker image, we can run a [test script](./notebooks/course/streamin
 
 
 ## 🛠️ 6.2 Integration tests with docker-compose
-
-
+Previously, the Lambda function code was refactored to delegate core logic to a `model.py` file, making it easier to test individual components. We then implemented unit tests to cover specific functions within the `model.py` file, but their scope was limited to individual functions and did not verify the entire system's functionality or its ability to handle requests and responses.   
 
 
 
