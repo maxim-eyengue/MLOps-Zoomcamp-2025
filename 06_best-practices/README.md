@@ -157,7 +157,70 @@ For integration tests, the Kinesis stream needs to be created every time the tes
 > Some [instructions](./notebooks/course/streaming/README.md) available for local testing with the AWS CLI.
 > Note that in case of any code failure, our [script](./notebooks/course/streaming/integration-test/run.sh) was written to exit. To run it: `bash run.sh`.
 
-## 🖥️ 6.4 
+
+## 🖥️ 6.4 Code Quality: linting and formatting
+Code quality extends beyond reliability (covered by tests: the code does what it is expected) to include aesthetic aspects and adherence to best practices, aiming for "beautiful" code. [**PEP 8**](https://peps.python.org/pep-0008/) is a crucial style guide for Python, part of the **Python Enhancement Proposals (PEPs)**, which dictates how Python code should be formatted and structured.
+
+### Linting with Pylint
+**Linters** are tools that perform static code analysis to check if code follows conventions like PEP 8 and identify common mistakes or potentially harmful patterns (e.g., global variables). 
+
+**Pylint** is a widely used static code analysis tool for Python that checks for style guide adherence and common coding issues. To install Pylint as a development dependency, use `pipenv install pylint --dev`. We can then run Pylint from the terminal using
+```sh
+pipenv run pylint .
+```
+for the current directory or:
+```sh
+pylint <file_name.py>
+```
+for a specific file.
+
+This command outputs various **warnings and suggestions**, such as missing documentation for modules or functions, trailing whitespace, or issues with naming conventions, with a **note for the code**. Pylint can be integrated with IDEs like VS Code (an extension is available), where it underlines problems directly in the code editor, making issues easier to spot. Pylint's exit code is non-zero if warnings are present, which can be used to fail CI/CD jobs or pre-commit hooks, ensuring code quality before deployment.
+
+Pylint's behavior can be configured to suppress specific warnings, either globally or locally. Global configuration can be done via a `.pylintrc` file or, preferably, using [pyproject.toml](./notebooks/course/streaming/pyproject.toml): a common configuration file for many Python projects. In `pyproject.toml`, warnings can be disabled under the `[tool.pylint.messages_control]` section by listing their codes in a `disable` array. This is a better option as other tools can use this configuration file. Locally, warnings can be disabled for specific code blocks (e.g., a class or function) by adding `# pylint: disable=<warning-code>` comments directly in the code.
+
+Common issues addressed by Pylint include:
+- Missing docstrings for modules, classes, or functions.
+- "Too few public methods" in a class.
+- Unused arguments in functions.
+- "Line too long" warnings, which can often be resolved by refactoring long data lines into separate files or by adjusting formatting rules.
+- Encoding issues, such as missing `encoding='utf-8'` for file operations, which can cause problems on different operating systems.
+
+### Code Formatting with Black & Import Sorting with isort
+We can install those tools with:
+```sh
+pipenv install --dev black isort
+```
+
+**Black** is an opinionated code formatter that automatically reformats Python code to a consistent style, improving aesthetics and readability. Black is highly opinionated; for example, it defaults to using double quotes for strings, though this can be configured. To prevent Black from changing string quotes, `skip-string-normalization = true` can be set in the `[tool.black]` section of `pyproject.toml`. Other Black configurations in `pyproject.toml` include `target-version` (e.g., `3.9`) and `line-length` (e.g., `88`). To see the changes Black would make without applying them, use 
+```sh
+pipenv run black --diff .
+```
+To apply changes, use 
+```sh
+pipenv run black .
+```
+Adding a trailing comma to multi-line structures (e.g., lists, dictionaries, function arguments) can prevent Black from reformatting them into a single line.
+
+**isort** is a dedicated tool for sorting imports in Python files, ensuring they are consistently ordered. It typically groups standard library imports, then third-party imports, and finally local application imports. To see the changes isort would make, use 
+```sh
+pipenv run isort --diff .
+```
+To apply changes, use
+```sh
+pipenv run isort .
+```
+isort can also be configured in `pyproject.toml` under the `[tool.isort]` section, allowing for different sorting profiles or custom rules.
+
+### Integrated Code Quality Workflow
+- Code quality tools are typically used in a defined sequence as part of a development workflow, often before committing code to version control or within a CI/CD pipeline.
+- A common workflow involves running tools in the following order to ensure a clean and consistent codebase:
+    1.  **isort**: Sorts imports.
+    2.  **Black**: Formats the code.
+    3.  **Pylint**: Lints the code for style and common errors.
+    4.  **Pytest**: Runs tests to ensure functionality.
+- This sequential application helps ensure that formatting and import issues are resolved before linting and testing, streamlining the development process.
+
+
 
 ## 🧰 6.5 
 
