@@ -191,7 +191,7 @@ We can install those tools with:
 pipenv install --dev black isort
 ```
 
-**Black** is an opinionated code formatter that automatically reformats Python code to a consistent style, improving aesthetics and readability. Black is highly opinionated; for example, it defaults to using double quotes for strings, though this can be configured. To prevent Black from changing string quotes, `skip-string-normalization = true` can be set in the `[tool.black]` section of `pyproject.toml`. Other Black configurations in `pyproject.toml` include `target-version` (e.g., `3.9`) and `line-length` (e.g., `88`). To see the changes Black would make without applying them, use 
+**Black** is an opinionated code formatter that automatically reformats Python code to a consistent style, improving aesthetics and readability. Black is highly opinionated. For example, it defaults to using double quotes for strings, though this can be configured. To prevent Black from changing string quotes, `skip-string-normalization = true` can be set in the `[tool.black]` section of [pyproject.toml](./notebooks/course/streaming/pyproject.toml). Other Black configurations in [pyproject.toml](./notebooks/course/streaming/pyproject.toml) include `target-version` (e.g., `3.9`) and `line-length` (e.g., `88`). To see the changes Black would make without applying them, use 
 ```sh
 pipenv run black --diff .
 ```
@@ -212,14 +212,13 @@ pipenv run isort .
 isort can also be configured in `pyproject.toml` under the `[tool.isort]` section, allowing for different sorting profiles or custom rules.
 
 ### Integrated Code Quality Workflow
-- Code quality tools are typically used in a defined sequence as part of a development workflow, often before committing code to version control or within a CI/CD pipeline.
-- A common workflow involves running tools in the following order to ensure a clean and consistent codebase:
+Code quality tools are typically used in a defined sequence as part of a development workflow, often before committing code to version control or within a CI/CD pipeline.
+A common workflow involves running tools in the following order to ensure a clean and consistent codebase:
     1.  **isort**: Sorts imports.
     2.  **Black**: Formats the code.
     3.  **Pylint**: Lints the code for style and common errors.
     4.  **Pytest**: Runs tests to ensure functionality.
-- This sequential application helps ensure that formatting and import issues are resolved before linting and testing, streamlining the development process.
-
+This sequential application helps ensure that formatting and import issues are resolved before linting and testing, streamlining the development process.
 
 
 ## 🧰 6.5 

@@ -10,15 +10,15 @@ def read_text(file):
     test_directory = Path(__file__).parent
 
     # Read the file
-    with open(test_directory / file, 'rt', encoding = 'utf-8') as f_in:
+    with open(test_directory / file, 'rt', encoding='utf-8') as f_in:
         return f_in.read().strip()
 
 
 def test_base64_decode():
     "Test the `decode` function."
-    base64_input = read_text('data.b64') # reading the input file
+    base64_input = read_text('data.b64')  # reading the input file
 
-    actual_result = model.base64_decode(base64_input) # decoding the file
+    actual_result = model.base64_decode(base64_input)  # decoding the file
     expected_result = {
         "ride": {
             "PULocationID": 130,
@@ -40,7 +40,7 @@ def test_prepare_features():
         "PULocationID": 130,
         "DOLocationID": 205,
         "trip_distance": 3.66,
-    } # input
+    }  # input
 
     actual_features = model_service.prepare_features(ride)
 
@@ -65,18 +65,18 @@ class ModelMock:
 
 def test_predict():
     "Test the model predict method."
-    model_mock = ModelMock(10.0) # declaring a mock model
-    model_service = model.ModelService(model_mock) # passing it for model serving
+    model_mock = ModelMock(10.0)  # declaring a mock model
+    model_service = model.ModelService(model_mock)  # passing it for model serving
 
     features = {
         "PU_DO": "130_205",
         "trip_distance": 3.66,
     }
 
-    actual_prediction = model_service.predict(features) # get the mock prediction
+    actual_prediction = model_service.predict(features)  # get the mock prediction
     expected_prediction = 10.0
 
-    assert actual_prediction == expected_prediction # check the match
+    assert actual_prediction == expected_prediction  # check the match
 
 
 def test_lambda_handler():

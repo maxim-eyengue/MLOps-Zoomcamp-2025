@@ -1,4 +1,4 @@
-#pylint: disable=missing-timeout
+# pylint: disable=missing-timeout
 
 # Necessary import
 import json
@@ -13,9 +13,9 @@ with open('event.json', 'rt', encoding='utf-8') as f_in:
 # Address for making request
 url = 'http://localhost:8080/2015-03-31/functions/function/invocations'
 # Send the request to trigger the lambda function and get the response
-actual_response = requests.post(url, json = event).json()
+actual_response = requests.post(url, json=event).json()
 print('actual response:')
-print(json.dumps(actual_response, indent = 2))
+print(json.dumps(actual_response, indent=2))
 
 # Expected response
 expected_response = {
@@ -31,10 +31,9 @@ expected_response = {
     ]
 }
 
-# Check the difference - 
+# Check the difference -
 # specifying we only care about one sinificant digit after the dot
-diff = DeepDiff(actual_response, expected_response,
-                significant_digits = 1)
+diff = DeepDiff(actual_response, expected_response, significant_digits=1)
 print(f'diff = {diff}')
 
 # Check if significant differences in type and vales
