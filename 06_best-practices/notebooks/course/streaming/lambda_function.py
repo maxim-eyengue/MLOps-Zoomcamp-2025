@@ -1,5 +1,6 @@
 # Necessary import
 import os
+
 import model
 
 # Get the prediction stream name

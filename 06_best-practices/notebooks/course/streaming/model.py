@@ -1,8 +1,9 @@
 # Necessary import
 import os
 import json
+import base64
+
 import boto3
-import base64   
 import mlflow
 
 
@@ -10,8 +11,10 @@ import mlflow
 def get_model_location(run_id):
     # Get the model location via the environments variable
     model_location = os.getenv('MODEL_LOCATION')
-    # Locally: MODEL_LOCATION='mlflow-models/1/1ca05c6d23f44066a4a4dcdbe1639de4/artifacts/model'
-    # From MLFlow server: MODEL_LOCATION='runs:/1ca05c6d23f44066a4a4dcdbe1639de4/model' 
+    # Locally:
+    # MODEL_LOCATION='mlflow-models/1/1ca05c6d23f44066a4a4dcdbe1639de4/artifacts/model'
+    # From MLFlow server:
+    # MODEL_LOCATION='runs:/1ca05c6d23f44066a4a4dcdbe1639de4/model' 
 
     # If the model location is provided via terminal
     if model_location is not None:
@@ -22,7 +25,8 @@ def get_model_location(run_id):
     experiment_id = os.getenv('MLFLOW_EXPERIMENT_ID', '1')
 
     # Model location from local bucket
-    model_location = f'{model_bucket}/{experiment_id}/{run_id}/artifacts/model' # For s3: add `s3://` at the beggining of the f string.
+    model_location = f'{model_bucket}/{experiment_id}/{run_id}/artifacts/model'
+    # For s3: add `s3://` at the beggining of the f string.
     return model_location
 
 # Function to load the model
@@ -50,7 +54,8 @@ class ModelService:
     # Method for feature engineering
     def prepare_features(self, ride):
         features = {}
-        features['PU_DO'] = f"{ride['PULocationID']}_{ride['DOLocationID']}" # '%s_%s' % (ride['PULocationID'], ride['DOLocationID'])
+        features['PU_DO'] = f"{ride['PULocationID']}_{ride['DOLocationID']}"
+        # '%s_%s' % (ride['PULocationID'], ride['DOLocationID'])
         features['trip_distance'] = ride['trip_distance']
         return features
     
@@ -152,7 +157,8 @@ def init(prediction_stream_name: str, run_id: str, test_run: bool):
         callbacks.append(kinesis_callback.put_record)
 
     # Initialize the model
-    model_service = ModelService(model = model, model_version = run_id, callbacks = callbacks)
+    model_service = ModelService(model = model, model_version = run_id,
+                                 callbacks = callbacks)
 
     # Return the model onject for serving
     return model_service
