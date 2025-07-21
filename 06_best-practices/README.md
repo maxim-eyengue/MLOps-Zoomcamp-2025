@@ -116,11 +116,6 @@ Finally, we can test the image:
 pipenv run python test_docker.py
 ```
 
-> The **Kinesis callback** functionality can be tested by setting the `test_run` flag is to `False` and running the commamd:
-```sh
-pipenv run python test_kinesis.py
-```
-
 
 #### Automating Integration Tests with Docker Compose
 The entire testing workflow, including building the Docker image, running the service, executing tests, and stopping the service, can be automated using a [shell script](./notebooks/course/streaming/integration-test/run.sh). The script ensures it always runs from its own directory using a specific bash command. Docker image tags are dynamically generated using the current date and time to ensure uniqueness. **Docker Compose**  is used to manage the service's configuration, including image name, exposed ports, environment variables (e.g., `MODEL_LOCATION`), and volume mounts for the local model folder.    
@@ -138,7 +133,29 @@ bash run.sh
 For Continuous Integration/Continuous Deployment (CI/CD) systems, a script's exit code determines job success (0) or failure (non-zero). Using `set -e` in a bash script forces it to exit immediately upon the first non-zero command, but this can prevent cleanup actions like `docker-compose down`. A more robust approach is to manually capture the test's exit code into a variable and then conditionally print Docker Compose logs and exit with the captured code after ensuring `docker-compose down` is executed. This ensures that if tests fail, the CI/CD job will be marked as failed, and relevant container logs will be available for debugging.   
 
 
-## 📉 6.3 
+## 📉 6.3 Testing Cloud Services with LocalStack
+**LocalStack** is a fully functional local AWS cloud stack used for testing AWS services locally. After **Unit tests** to test individual functions with **Pytest**, **Integration tests** by running a service inside Docker and using a Python script to verify its output, we can proceed to test the **Kinesis connection**, specifically the part of the code that puts responses to a Kinesis stream.
+
+
+#### LocalStack Installation and Configuration
+LocalStack can be installed via pip:
+```sh
+pip install localstack
+```
+We can also use a **Docker Compose** configuration [file](./notebooks/course/streaming/integration-test/docker-compose.yaml). The `SERVICES` environment variable in the Docker Compose configuration can be set to `kinesis` to start only the Kinesis server, preventing other services from running .
+
+#### Testing LocalStack with AWS CLI
+To verify LocalStack functionality, we can start the Kinesis service using `docker compose up kinesis`. When using the **AWS CLI** to interact with LocalStack, we must specify the `endpoint-url` parameter, pointing to `http://localhost:4566`. For example,
+`aws kinesis list-streams --endpoint-url http://localhost:4566` lists streams from LocalStack, not your actual AWS account. Streams can be created in LocalStack using commands like `aws kinesis create-stream --stream-name write-predictions --shard-count 1 --endpoint-url http://localhost:4566`. This ensures that streams are created locally within LocalStack and do not appear in your live AWS account.
+
+To configure application code to use LocalStack, a special environmental variable, `KINESIS_ENDPOINT_URL`, can be created. Inside the Docker Compose network, services can refer to each other by their service names (e.g., `http://kinesis:4566`), while outside the network, `localhost` is used. 
+
+
+#### Running and Verifying the Integration Test
+For integration tests, the Kinesis stream needs to be created every time the test runs, which can be integrated into our [test script](./notebooks/course/streaming/integration-test/run.sh). Data in the Kinesis stream can be checked using the AWS CLI ensuring the `endpoint-url` is specified. For automated testing, a [Python script](./notebooks/course/streaming/integration-test/test_kinesis.py) using **Boto3** is recommended to interact with Kinesis. Note that in some cases, LocalStack might not require base64 decoding for records, allowing direct JSON parsing.
+
+> Some [instructions](./notebooks/course/streaming/README.md) available for local testing with the AWS CLI.
+> Note that in case of any code failure, our [script](./notebooks/course/streaming/integration-test/run.sh) was written to exit. To run it: `bash run.sh`.
 
 ## 🖥️ 6.4 
 
