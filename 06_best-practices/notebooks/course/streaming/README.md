@@ -32,11 +32,13 @@ docker run -it --rm \
 
 ### Specifying endpoint URL
 
+To list local streams:
 ```bash
 aws --endpoint-url=http://localhost:4566 \
     kinesis list-streams
 ```
 
+To create a kinesis stream:
 ```bash
 aws --endpoint-url=http://localhost:4566 \
     kinesis create-stream \
@@ -44,6 +46,7 @@ aws --endpoint-url=http://localhost:4566 \
     --shard-count 1
 ```
 
+To get the shard-iterator so we can see what is inside:
 ```bash
 aws  --endpoint-url=http://localhost:4566 \
     kinesis     get-shard-iterator \
@@ -52,6 +55,12 @@ aws  --endpoint-url=http://localhost:4566 \
     --stream-name ${PREDICTIONS_STREAM_NAME} \
     --query 'ShardIterator'
 ```
+
+To decode the stream:
+```sh
+echo "STREAM_DATA" | base64 -d
+```
+
 
 ### Unable to locate credentials
 
