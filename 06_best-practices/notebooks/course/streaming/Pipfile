@@ -11,6 +11,9 @@ scikit-learn = "==1.5.0"
 [dev-packages]
 pytest = "*"
 deepdiff = "*"
+pylint = "*"
+black = "*"
+isort = "*"
 
 [requires]
 python_version = "3.9"
