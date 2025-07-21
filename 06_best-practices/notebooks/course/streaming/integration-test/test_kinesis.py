@@ -1,10 +1,11 @@
 # pylint: disable=duplicate-code
 
-# necessary import
+# Necessary import
 import os
 import json
-import boto3
 from pprint import pprint
+
+import boto3
 from deepdiff import DeepDiff
 
 # Create Kinesis endpoint and client for local testing

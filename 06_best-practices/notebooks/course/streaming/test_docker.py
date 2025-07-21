@@ -1,5 +1,8 @@
+#pylint: disable=line-too-long
+#pylint: disable=missing-timeout
+
 # Necessary import
-import requests 
+import requests
 
 # Event data
 event = {

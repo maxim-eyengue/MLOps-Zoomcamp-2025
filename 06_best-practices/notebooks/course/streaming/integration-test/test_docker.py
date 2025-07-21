@@ -1,6 +1,10 @@
+#pylint: disable=missing-timeout
+
 # Necessary import
-import json, requests 
-from deepdiff import DeepDiff # to inform exactly 
+import json
+
+import requests
+from deepdiff import DeepDiff
 
 # Event data
 with open('event.json', 'rt', encoding='utf-8') as f_in:
@@ -27,8 +31,10 @@ expected_response = {
     ]
 }
 
-# Check the difference - specifying we only care about one sinificant digit after the dot
-diff = DeepDiff(actual_response, expected_response, significant_digits = 1)
+# Check the difference - 
+# specifying we only care about one sinificant digit after the dot
+diff = DeepDiff(actual_response, expected_response,
+                significant_digits = 1)
 print(f'diff = {diff}')
 
 # Check if significant differences in type and vales
