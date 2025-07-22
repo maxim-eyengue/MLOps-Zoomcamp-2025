@@ -221,9 +221,37 @@ A common workflow involves running tools in the following order to ensure a clea
 This sequential application helps ensure that formatting and import issues are resolved before linting and testing, streamlining the development process.
 
 
-## 🧰 6.5 
+## 🧰 6.5 Git pre-commit hooks
+Developers often use multiple commands for code quality, such as **isort** for sorting imports, **black** for formatting, **pylint** for linting, and **pytest** for running tests. It is easy to forget to execute these commands consistently before committing code to a Git repository. To prevent this, **Git pre-commit hooks** can be used to run checks automatically *before* the code is committed. Git provides various hooks, with `pre-commit` being the one executed prior to a commit.
 
-## 🧭 6.6 
+#### The `pre-commit` Tool
+The **`pre-commit`** tool is a Python-based utility that simplifies defining and managing these pre-commit scripts and hooks. It can be installed using `pip` or `pipenv`:
+```sh
+pipenv install --dev pre-commit
+```
+Git repositories contain a `.git/hooks` folder where a bash script named `pre-commit.sample` is placed to execute before every commit. The `pre-commit` tool helps update this script. The `.git` folder is local to each repository clone and is not committed; therefore, every team member must run `pre-commit install` once after cloning a repository to set up the hooks locally. For testing purposes within a larger repository, a specific subfolder can be initialized as a standalone Git repository using `git init` to enable `pre-commit` hooks for that isolated context.
+
+#### Configuration and Usage
+`pre-commit` requires a configuration file, typically `.pre-commit-config.yaml`, which can be generated as a sample and redirected into the file using:
+```sh
+pipenv run pre-commit sample-config > .pre-commit-config.yaml
+```
+The configuration file defines which hooks to run. Default hooks include checks for trailing white spaces, end-of-file issues, valid YAML syntax, and large files. After creating the config file, we create the actual Git hook script in `.git/hooks`:
+```sh
+pipenv run pre-commit install
+```
+When a user performs `git add` and `git commit`, the `pre-commit` hook automatically executes the configured checks. If any hook fails (e.g., due to formatting errors or failing tests), it will modify the problematic files (if applicable) and prevent the commit from completing. The user then needs to add the modified files (`git add`) and re-commit. A commit is only successful if all pre-commit hooks pass with a zero error code.
+
+#### Integrating Custom Code Quality Tools
+`pre-commit` supports integrating various external code quality tools beyond its built-in hooks (e.g., `check-json`, `detect-private-keys`). Tools like **isort**, **black**, **pylint**, and **pytest** can be added to the `.pre-commit-config.yaml` file by specifying their repository, revision (version), and hook ID. Alternatively, for tools like `pylint` and `pytest`, specific commands can be directly defined within the configuration, along with arguments (e.g., specifying a `tests` folder for `pytest`).
+
+> Deliberately failing a test can confirm that the `pytest` hook correctly prevents the commit, demonstrating its effectiveness in maintaining code quality.
+
+#### Benefits of Using Pre-Commit Hooks
+`pre-commit` hooks automate the execution of code quality checks, significantly saving time by eliminating the need for manual execution. They ensure that code is properly formatted, linted, and tested *before* it enters the shared code repository, thereby enforcing good engineering practices. This automation means developers do not need to constantly remember to run these checks themselves, streamlining the development workflow. It is highly recommended to use `pre-commit` hooks for project development to maintain consistent code quality.
+
+
+## 🧭 6.6 Makefiles and make
 
 ## 📝 6.7 Homework
 Homework for this module is available [here.](notebooks/homework/homework_06.ipynb).
