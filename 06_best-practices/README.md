@@ -251,7 +251,44 @@ When a user performs `git add` and `git commit`, the `pre-commit` hook automatic
 `pre-commit` hooks automate the execution of code quality checks, significantly saving time by eliminating the need for manual execution. They ensure that code is properly formatted, linted, and tested *before* it enters the shared code repository, thereby enforcing good engineering practices. This automation means developers do not need to constantly remember to run these checks themselves, streamlining the development workflow. It is highly recommended to use `pre-commit` hooks for project development to maintain consistent code quality.
 
 
-## 🧭 6.6 Makefiles and make
+## 🧭 6.6 Makefiles and Make
+**Make** is a tool used to define aliases and orchestrate commands through **Makefiles**. It is often pre-installed on Linux and Mac, and can be installed on Windows using package managers like Choco. You can check the version with:
+```sh
+make --version
+```
+A [Makefile](./notebooks/course/streaming/Makefile) is a file that specifies commands associated with targets (aliases). Commands in a Makefile are defined as **targets** (e.g., `run`), which execute specified actions when called. (e.g., `make run`). Makefiles allow defining **dependencies**, where one target must complete successfully before another can run (e.g., `run` can depends on `test`). This can help creating a **directed acyclic graph (DAG)** of dependencies, ensuring tasks are executed in the correct order, a bit like an orchestrator. For example, a `build` target can depend on `test` and `integration_test` targets.
+
+#### Practical Applications
+Makefiles are useful for automating various development tasks:
+- **Quality Checks**: Running linters (e.g., pylint) and formatters (e.g., black, isort) before other steps.
+```sh
+pipenv run make quality_checks
+```
+ - **Testing**: Executing unit tests (e.g., `pytest`) and integration tests.  
+```sh
+pipenv run make test
+pipenv run make integration_test
+```
+- **Build Automation**: Orchestrating complex builds, such as Docker image creation using `docker compose`.
+```sh
+pipenv run make build
+```
+- **Publishing**: Automating deployment steps, like publishing an image to ECR, ensuring dependent build and test steps are completed first.
+```sh
+pipenv run make publish
+```
+A common setup target can be defined to prepare the development environment and install pre-commit hooks, simplifying project onboarding:
+```sh
+make setup
+```
+
+> Variables can be passed to scripts, allowing conditional logic within those scripts to avoid redundant operations (e.g., checking if an image is already built before rebuilding). When using variables in Makefiles, direct expansion `$(VAR)` might not execute shell commands within the variable value, leading to unexpected results. To ensure shell commands within variables are evaluated, use the `shell` keyword (e.g., `$(shell command)`).
+
+Makefiles offer significant advantages for project management and automation:
+    - **Convenience**: Eliminates the need to remember complex, multi-step commands.
+    - **Orchestration**: Manages dependencies between tasks, ensuring correct execution order.
+    - **Auto-completion**: Provides tab auto-completion for defined targets, improving usability.
+    - **Standardization**: Centralizes project setup and common operations, making it easier for new contributors to get started.
 
 ## 📝 6.7 Homework
 Homework for this module is available [here.](notebooks/homework/homework_06.ipynb).
