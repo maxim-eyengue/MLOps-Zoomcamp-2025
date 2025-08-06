@@ -57,15 +57,7 @@ There’s a lot of solid work here, but some of it isn’t fully visible due to 
 	•	Dataset Description & Target Variable:
 	    •	It would be helpful to explain the dataset more thoroughly.
 	    •	For example, clarify what the target variable represents: is 0 for closed or open eyes?
-	•	Bash Code Formatting: There were some formatting issues in your bash code snippets. To improve readability, follow this Markdown-friendly pattern:
-
-```markdown
-```bash
-# start your command on the next line
-command_1
-command_2
-```
-```
+	•	Bash Code Formatting: There were some formatting issues in your bash code snippets. Make sure to improve readbility.
 	•	Model Registry Misuse:
 	    •	The model was logged but not registered properly in the MLflow model registry.
 	    •	This may explain the issues with CI/CD failures — there’s a difference between logging and registering a model. You need to explicitly register it if you want to refer to it across environments.
