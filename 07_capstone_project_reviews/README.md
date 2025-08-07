@@ -1,4 +1,4 @@
-![ML Zoomcamp Illustration](../files/zoomcamp.jpg)
+![MLOps Zoomcamp](../images/banner-2025.jpg)
 ---
 
 ## 📚 MLOps Zoomcamp Capstone Project Reviews
